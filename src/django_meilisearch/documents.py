@@ -1,8 +1,10 @@
 from django.db.models import Model
 
+from meilisearchdsl import Q
+
 from django_meilisearch import client
 from django_meilisearch.serializers import serialize_queryset
-from django_meilisearch.utils import exists_field_in_namespace
+from django_meilisearch.utils import convert_to_camel_case, exists_field_in_namespace
 
 
 class DocType(type):
@@ -11,12 +13,12 @@ class DocType(type):
         "Django__model",
         "Django__primary_key_field",
     ]
-    
+
     REGISTERED_INDEXES = {}
 
     def __new__(cls, name: str, bases: tuple, namespace: dict):
         result = super().__new__(cls, name, bases, namespace)
-        
+
         if name != "Document":
             if any(
                 not exists_field_in_namespace(field, namespace)
@@ -46,7 +48,7 @@ class DocType(type):
 
             if not issubclass(model, Model):
                 raise ValueError(f"{name}.Django.model must be a Django Model")
-            
+
             index_label = f"{model._meta.app_label}.{namespace['__qualname__']}"
             cls.REGISTERED_INDEXES[index_label] = result
 
@@ -56,7 +58,7 @@ class DocType(type):
         super().__init__(name, bases, namespace)
 
     def create(cls):
-        client.create_index(
+        client.get_index(
             cls.name,
             {
                 "primaryKey": cls.Django.primary_key_field,
@@ -64,26 +66,36 @@ class DocType(type):
         )
 
     def populate(cls):
-        index = client.get_index(cls.name)
+        index = client.get_index(cls.name, cls.Django.primary_key_field)
+
+        model_fields = [field.name for field in cls.Django.model._meta.fields]
+        index.aupdate_filterable_attributes(model_fields)
+        index.aupdate_searchable_attributes(model_fields)
+
         db_count = cls.Django.model.objects.count()
 
         for i in range(0, db_count, 1000):
             batch = cls.Django.model.objects.all()[i : i + 1000]
-            index.add_documents(
+            index.aadd_documents(
                 serialize_queryset(batch, cls.Django.model),
                 cls.Django.primary_key_field,
             )
-        
+
         return db_count
+    
+    def clean(cls):
+        index = client.get_index(cls.name, cls.Django.primary_key_field)
+        count = client.get_stats()["indexes"][cls.name]["numberOfDocuments"]
+        index.adelete_all_documents()
+        return count
 
-    def search(cls, query: str, **kwargs):
-        fields = kwargs.get("fields")
-        if not fields:
-            fields = cls.Django.search_fields
-
-        print("searching for query:", query, "in fields:", fields)
-
-        return {}
+    def search(cls, term: str, query: Q, **kwargs):
+        index = client.get_index(cls.name, cls.Django.primary_key_field)
+        for key in list(kwargs.keys()):
+            camel_key = convert_to_camel_case(key)
+            kwargs[camel_key] = kwargs[key]
+            del kwargs[key]
+        return index.search(term, q=query, opt_params=kwargs)
 
 
 class Document(metaclass=DocType): ...

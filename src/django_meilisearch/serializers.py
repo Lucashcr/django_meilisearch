@@ -1,3 +1,4 @@
+from django.db.models import BigAutoField
 from datetime import datetime
 
 
@@ -7,6 +8,8 @@ def serialize_field(value):
     """
     if isinstance(value, datetime):
         return value.timestamp()
+    if isinstance(value, BigAutoField):
+        return int(value)
     return value
 
 

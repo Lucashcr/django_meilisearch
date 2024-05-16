@@ -1,10 +1,10 @@
 from django.utils.module_loading import autodiscover_modules
 from django.conf import settings
 
-from meilisearchdsl import Client
+from meilisearchdsl import MeiliClient
 
 
-client = Client(**settings.DJANGO_MEILISEARCH)
+client = MeiliClient(**settings.DJANGO_MEILISEARCH)
 
 def autodiscover():
     autodiscover_modules("documents")

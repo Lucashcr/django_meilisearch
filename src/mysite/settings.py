@@ -125,7 +125,7 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 DJANGO_MEILISEARCH = {
-    "url": "http://localhost:7700",  # Your MeiliSearch host
-    "api_key": "...",  # Your MeiliSearch master key
+    "host": "http://localhost:7700",  # Your MeiliSearch host
+    "master_key": "...",  # Your MeiliSearch master key
     # "timeout": 1,  # Timeout for MeiliSearch requests (optional)
 }
