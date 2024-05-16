@@ -6,5 +6,6 @@ from meilisearchdsl import MeiliClient
 
 client = MeiliClient(**settings.DJANGO_MEILISEARCH)
 
+
 def autodiscover():
     autodiscover_modules("documents")

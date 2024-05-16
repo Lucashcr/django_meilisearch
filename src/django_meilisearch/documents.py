@@ -82,7 +82,7 @@ class DocType(type):
             )
 
         return db_count
-    
+
     def clean(cls):
         index = client.get_index(cls.name, cls.Django.primary_key_field)
         count = client.get_stats()["indexes"][cls.name]["numberOfDocuments"]

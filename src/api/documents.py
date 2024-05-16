@@ -2,6 +2,7 @@ from django_meilisearch.documents import Document
 
 from api.models import Post
 
+
 class PostIndex(Document):
     name = "posts"
 

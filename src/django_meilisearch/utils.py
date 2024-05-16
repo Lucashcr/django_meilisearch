@@ -14,6 +14,6 @@ def exists_field_in_namespace(field: str, namespace: dict) -> bool:
 def convert_to_camel_case(string: str) -> str:
     if "_" not in string:
         return string.lower()
-    
+
     splitted = string.split("_")
     return splitted[0] + "".join(word.capitalize() for word in splitted[1:])
