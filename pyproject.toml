@@ -19,6 +19,7 @@ taskipy = "^1.12.2"
 pylint = "^3.1.0"
 
 [tool.taskipy.tasks]
+serve = "python src/manage.py runserver"
 format = "black"
 lint = "pylint"
 test = "pytest -vv"

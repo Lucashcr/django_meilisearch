@@ -9,4 +9,4 @@ class PostIndex(Document):
     class Django:
         model = Post
         primary_key_field = "id"
-        search_fields = ["title", "content"]
+        searchable_fields = ["title", "content"]
