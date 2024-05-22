@@ -5,8 +5,8 @@ from api.models import Post
 
 class PostIndex(Document):
     name = "posts"
+    model = Post
+    # primary_key_field = "id"          (default is models pk field) 
+    # searchable_fields = ["title"]     (default is all fields in model)
+    # filterable_fields = [...]         (default is all fields in model)
 
-    class Django:
-        model = Post
-        primary_key_field = "id"
-        searchable_fields = ["title", "content"]
