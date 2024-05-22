@@ -8,7 +8,7 @@ from django_meilisearch.documents import Document
 class Command(BaseCommand):
     help = "This command will help you to interact with MeiliSearch"
 
-    ACTION_CHOICES = ["create", "delete", "populate", "clean"]
+    ACTION_CHOICES = ["create", "delete", "populate", "clean", "rebuild"]
 
     def add_arguments(self, parser):
         parser.add_argument("action", type=str, help="Action to perform")
@@ -64,4 +64,11 @@ class Command(BaseCommand):
             count = IndexCls.clean()
             self.stdout.write(self.style.SUCCESS(f'Index cleared: "{index}"'))
             self.stdout.write(self.style.SUCCESS(f"Documents removed: {count}"))
+            return
+        
+        if action == "rebuild":
+            IndexCls.clean()
+            count = IndexCls.populate()
+            self.stdout.write(self.style.SUCCESS(f'Index rebuilt: "{index}"'))
+            self.stdout.write(self.style.SUCCESS(f"Documents reindexed: {count}"))
             return

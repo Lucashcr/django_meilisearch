@@ -1,3 +1,4 @@
+from typing import Optional
 from django.db.models import Model
 
 from meilisearchdsl import Q
@@ -126,14 +127,18 @@ class DocType(type):
         index.adelete_all_documents()
         return count
 
-    def search(cls, term: str, query: Q, **kwargs):
+    def search(cls, term: str, query: Optional[Q] = None, **opt_params):
         index = client.get_index(cls.name, cls.primary_key_field)
-        for key in list(kwargs.keys()):
-            camel_key = convert_to_camel_case(key)
-            kwargs[camel_key] = kwargs[key]
-            del kwargs[key]
         
-        return index.search(term, q=query, opt_params=kwargs)
+        if not "attributes_to_search_on" in opt_params:
+            opt_params["attributes_to_search_on"] = cls.searchable_fields
+        
+        for key in list(opt_params.keys()):
+            camel_key = convert_to_camel_case(key)
+            opt_params[camel_key] = opt_params[key]
+            del opt_params[key]
+        
+        return index.search(term, q=query, opt_params=opt_params)
 
 
 class Document(metaclass=DocType): ...

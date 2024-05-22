@@ -10,7 +10,7 @@ def test_search(request):
     print(datetime.fromtimestamp(1715738200))
     response = PostIndex.search(
         request.GET.get("q"),
-        Q(created_at__lte=datetime.fromisoformat("2024-05-15T01:56:40").timestamp()),
+        Q(),
         attributes_to_retrieve=["title", "content"],
         attributes_to_highlight=["content"],
     )
