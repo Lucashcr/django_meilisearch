@@ -1,5 +1,9 @@
+from http import HTTPStatus
 from typing_extensions import Unpack
+
 from django.db.models import Model
+
+from meilisearch.errors import MeilisearchApiError
 
 from django_meilisearch import client
 from django_meilisearch.exceptions import *
@@ -111,10 +115,6 @@ class DocType(type):
             cls.filterable_fields = filterable_fields
             cls.sortable_fields = sortable_fields
             
-            print("searchable fields:", cls.searchable_fields)
-            print("filterable fields:", cls.filterable_fields)
-            print("sortable fields:", cls.sortable_fields)
-            
             index_label = f"{namespace['model']._meta.app_label}.{namespace['__qualname__']}"
             cls.REGISTERED_INDEXES[index_label] = super().__new__(cls, name, bases, namespace)
             return cls.REGISTERED_INDEXES[index_label]
@@ -155,8 +155,6 @@ class DocType(type):
         return count
 
     def search(cls, term: str, **opt_params: Unpack[OptParams]):
-        index = client.get_index(cls.name)
-        
         if not "attributes_to_search_on" in opt_params:
             opt_params["attributes_to_search_on"] = cls.searchable_fields
         
@@ -165,8 +163,19 @@ class DocType(type):
             if camel_key != key:
                 opt_params[camel_key] = opt_params[key]
                 del opt_params[key]
+        try:
+            index = client.get_index(cls.name)
+            results = index.search(term, opt_params=opt_params)
         
-        return index.search(term, opt_params=opt_params)
+        except MeilisearchApiError as e:
+            results = {**e.__dict__}
+            status_code = e.status_code if e.status_code else HTTPStatus.INTERNAL_SERVER_ERROR
+        
+        else:
+            status_code = HTTPStatus.OK if results.get("hits") else HTTPStatus.NOT_FOUND
+        
+        finally:
+            return results, status_code
 
 
 class Document(metaclass=DocType): ...
