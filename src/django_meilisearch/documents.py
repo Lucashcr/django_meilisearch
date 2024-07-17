@@ -132,8 +132,9 @@ class DocType(type):
         
         for key in list(opt_params.keys()):
             camel_key = convert_to_camel_case(key)
-            opt_params[camel_key] = opt_params[key]
-            del opt_params[key]
+            if camel_key != key:
+                opt_params[camel_key] = opt_params[key]
+                del opt_params[key]
         
         return index.search(term, opt_params=opt_params)
 

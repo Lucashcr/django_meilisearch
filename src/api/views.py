@@ -7,8 +7,9 @@ from api.documents import PostIndex
 def test_search(request):
     response = PostIndex.search(
         request.GET.get("q"),
-        attributes_to_retrieve=["title", "content"],
-        attributes_to_highlight=["content"],
+        # attributes_to_retrieve=["title", "content"],
+        # attributes_to_highlight=["content"],
         limit=1,
+        offset=0
     )
     return JsonResponse(response)
