@@ -1,8 +1,10 @@
+from typing_extensions import Unpack
 from django.db.models import Model
 
 from django_meilisearch import client
 from django_meilisearch.exceptions import *
 from django_meilisearch.serializers import serialize_queryset
+from django_meilisearch.types import OptParams
 from django_meilisearch.utils import convert_to_camel_case, exists_field_in_namespace
 
 
@@ -25,12 +27,16 @@ class DocType(type):
             model = namespace["model"]
             
             model_field_names = [field.name for field in model._meta.fields]
-            searchable_fields = getattr(
-                namespace, "searchable_fields", model_field_names
+            searchable_fields = namespace.get(
+                "searchable_fields", model_field_names
             )
             
-            filterable_fields = getattr(
-                namespace, "filterable_fields", model_field_names
+            filterable_fields = namespace.get(
+                "filterable_fields", model_field_names
+            )
+            
+            sortable_fields = namespace.get(
+                "sortable_fields", model_field_names
             )
             
             if not isinstance(namespace["name"], str):
@@ -70,6 +76,19 @@ class DocType(type):
                 
                 raise InvalidFilterableFieldError(f"{name}.filterable_fields must be a list ")
 
+            if not isinstance(sortable_fields, list):
+                if (
+                    isinstance(sortable_fields, str)
+                    and sortable_fields == "__all__"
+                ):
+                    sortable_fields = model_field_names
+                else:
+                    raise InvalidSortableFieldError(
+                        f"{name}.sortable_fields must be a list or '__all__'"
+                    )
+                
+                raise InvalidSortableFieldError(f"{name}.sortable_fields must be a list ")
+
             for field in searchable_fields:
                 if not hasattr(model, field):
                     raise InvalidSearchableFieldError(
@@ -81,9 +100,20 @@ class DocType(type):
                     raise InvalidFilterableFieldError(
                         f"{model.__name__} does not have a filterable_field named {field}"
                     )
+            
+            for field in sortable_fields:
+                if not hasattr(model, field):
+                    raise InvalidSortableFieldError(
+                        f"{model.__name__} does not have a filterable_field named {field}"
+                    )
 
             cls.searchable_fields = searchable_fields
             cls.filterable_fields = filterable_fields
+            cls.sortable_fields = sortable_fields
+            
+            print("searchable fields:", cls.searchable_fields)
+            print("filterable fields:", cls.filterable_fields)
+            print("sortable fields:", cls.sortable_fields)
             
             index_label = f"{namespace['model']._meta.app_label}.{namespace['__qualname__']}"
             cls.REGISTERED_INDEXES[index_label] = super().__new__(cls, name, bases, namespace)
@@ -100,12 +130,12 @@ class DocType(type):
             {"primaryKey": cls.primary_key_field}
         )
 
-    def populate(cls):
+    def populate(cls) -> int:
         index = client.get_index(cls.name)
 
-        model_field_names = [field.name for field in cls.model._meta.fields]
-        index.update_filterable_attributes(model_field_names)
-        index.update_searchable_attributes(model_field_names)
+        index.update_filterable_attributes(cls.filterable_fields)
+        index.update_searchable_attributes(cls.searchable_fields)
+        index.update_sortable_attributes(cls.sortable_fields)
 
         db_count = cls.model.objects.count()
 
@@ -118,13 +148,13 @@ class DocType(type):
 
         return db_count
 
-    def clean(cls):
+    def clean(cls) -> int:
         index = client.get_index(cls.name)
         count = client.get_all_stats()["indexes"][cls.name]["numberOfDocuments"]
         index.delete_all_documents()
         return count
 
-    def search(cls, term: str, **opt_params):
+    def search(cls, term: str, **opt_params: Unpack[OptParams]):
         index = client.get_index(cls.name)
         
         if not "attributes_to_search_on" in opt_params:
