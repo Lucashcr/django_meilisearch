@@ -1,7 +1,4 @@
-from typing import Optional
 from django.db.models import Model
-
-from meilisearchdsl import Q
 
 from django_meilisearch import client
 from django_meilisearch.exceptions import *
@@ -98,23 +95,23 @@ class DocType(type):
         super().__init__(name, bases, namespace)
 
     def create(cls):
-        client.get_index(
+        client.create_index(
             cls.name,
-            cls.primary_key_field,
+            {"primaryKey": cls.primary_key_field}
         )
 
     def populate(cls):
-        index = client.get_index(cls.name, cls.primary_key_field)
+        index = client.get_index(cls.name)
 
         model_field_names = [field.name for field in cls.model._meta.fields]
-        index.aupdate_filterable_attributes(model_field_names)
-        index.aupdate_searchable_attributes(model_field_names)
+        index.update_filterable_attributes(model_field_names)
+        index.update_searchable_attributes(model_field_names)
 
         db_count = cls.model.objects.count()
 
         for i in range(0, db_count, 1000):
             batch = cls.model.objects.all()[i : i + 1000]
-            index.aadd_documents(
+            index.add_documents(
                 serialize_queryset(batch, cls.model),
                 cls.primary_key_field,
             )
@@ -122,13 +119,13 @@ class DocType(type):
         return db_count
 
     def clean(cls):
-        index = client.get_index(cls.name, cls.primary_key_field)
-        count = client.get_stats()["indexes"][cls.name]["numberOfDocuments"]
-        index.adelete_all_documents()
+        index = client.get_index(cls.name)
+        count = client.get_all_stats()["indexes"][cls.name]["numberOfDocuments"]
+        index.delete_all_documents()
         return count
 
-    def search(cls, term: str, query: Optional[Q] = None, **opt_params):
-        index = client.get_index(cls.name, cls.primary_key_field)
+    def search(cls, term: str, **opt_params):
+        index = client.get_index(cls.name)
         
         if not "attributes_to_search_on" in opt_params:
             opt_params["attributes_to_search_on"] = cls.searchable_fields
@@ -138,7 +135,7 @@ class DocType(type):
             opt_params[camel_key] = opt_params[key]
             del opt_params[key]
         
-        return index.search(term, q=query, opt_params=opt_params)
+        return index.search(term, opt_params=opt_params)
 
 
 class Document(metaclass=DocType): ...

@@ -7,7 +7,7 @@ def serialize_field(value):
     Serialize a field value.
     """
     if isinstance(value, datetime):
-        return value.timestamp()
+        return value.isoformat()
     if isinstance(value, BigAutoField):
         return int(value)
     return value
