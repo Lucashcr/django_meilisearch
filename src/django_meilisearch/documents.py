@@ -53,6 +53,8 @@ class DocType(type):
             
             if not isinstance(cls.primary_key_field, str):
                 raise InvalidPrimaryKeyError(f"{name}.Django.primary_key_field must be a string")
+            if not hasattr(model, cls.primary_key_field):
+                raise InvalidPrimaryKeyError(f"{model.__name__} does not have a primary_key_field named {cls.primary_key_field}")
 
             if not isinstance(searchable_fields, list):
                 if (
@@ -65,7 +67,7 @@ class DocType(type):
                         f"{name}.searchable_fields must be a list or '__all__'"
                     )
 
-                raise InvalidSearchableFieldError(f"{name}.searchable_fields must be a list ")
+                raise InvalidSearchableFieldError(f"{name}.searchable_fields must be a list or '__all__'")
 
             if not isinstance(filterable_fields, list):
                 if (
@@ -78,7 +80,7 @@ class DocType(type):
                         f"{name}.filterable_fields must be a list or '__all__'"
                     )
                 
-                raise InvalidFilterableFieldError(f"{name}.filterable_fields must be a list ")
+                raise InvalidFilterableFieldError(f"{name}.filterable_fields must be a list or '__all__'")
 
             if not isinstance(sortable_fields, list):
                 if (
@@ -91,7 +93,7 @@ class DocType(type):
                         f"{name}.sortable_fields must be a list or '__all__'"
                     )
                 
-                raise InvalidSortableFieldError(f"{name}.sortable_fields must be a list ")
+                raise InvalidSortableFieldError(f"{name}.sortable_fields must be a list or '__all__'")
 
             for field in searchable_fields:
                 if not hasattr(model, field):
