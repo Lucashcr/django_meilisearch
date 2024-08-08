@@ -1,4 +1,6 @@
 from http import HTTPStatus
+from djantic import ModelSchema
+from pydantic import ConfigDict
 from typing_extensions import Unpack
 
 from django.db.models import Model
@@ -7,7 +9,6 @@ from meilisearch.errors import MeilisearchApiError
 
 from django_meilisearch import client
 from django_meilisearch.exceptions import *
-from django_meilisearch.serializers import serialize_queryset
 from django_meilisearch.types import OptParams
 from django_meilisearch.utils import convert_to_camel_case, exists_field_in_namespace
 
@@ -116,6 +117,16 @@ class DocType(type):
             cls.searchable_fields = searchable_fields
             cls.filterable_fields = filterable_fields
             cls.sortable_fields = sortable_fields
+                        
+            cls.schema = type(
+                f"{name}Schema",
+                (ModelSchema,),
+                {
+                    "model_config": ConfigDict(
+                        model=model,
+                    )
+                }
+            )
             
             index_label = f"{namespace['model']._meta.app_label}.{namespace['__qualname__']}"
             cls.REGISTERED_INDEXES[index_label] = super().__new__(cls, name, bases, namespace)
@@ -145,7 +156,7 @@ class Document(metaclass=DocType):
         for i in range(0, db_count, 1000):
             batch = cls.model.objects.all()[i : i + 1000]
             index.add_documents(
-                serialize_queryset(batch, cls.model),
+                [s.model_dump(mode='json') for s in cls.schema.from_django(batch, many=True)],
                 cls.primary_key_field,
             )
 

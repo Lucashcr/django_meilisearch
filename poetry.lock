@@ -343,6 +343,17 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "djantic2"
+version = "1.0.4"
+description = "Pydantic model support for Django ORM"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "djantic2-1.0.4-py3-none-any.whl", hash = "sha256:39d651e4114bf5cee549a3bcf7332a5a29ed1c54a45e8c364c70ef9e4715f38a"},
+    {file = "djantic2-1.0.4.tar.gz", hash = "sha256:62831896e5d79db22c1db901ad0351b89c15ff6a6c47fc7a51b12229f47d958b"},
+]
+
+[[package]]
 name = "exceptiongroup"
 version = "1.2.2"
 description = "Backport of PEP 654 (exception groups)"
@@ -848,4 +859,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "9505da92e0c6fe02a30b68e605f36ca87cb6955c0604ab05fed6cef1cfc9fd55"
+content-hash = "b990142988a71277831aefe5b92ea49976f27afcd7ea69fc15079de1b9d4dd81"
