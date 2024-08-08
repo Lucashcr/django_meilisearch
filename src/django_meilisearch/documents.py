@@ -123,15 +123,16 @@ class DocType(type):
 
         return super().__new__(cls, name, bases, namespace)
 
-    def __init__(cls, name, bases, namespace):
-        super().__init__(name, bases, namespace)
 
+class Document(metaclass=DocType):
+    @classmethod
     def create(cls):
         client.create_index(
             cls.name,
             {"primaryKey": cls.primary_key_field}
         )
 
+    @classmethod
     def populate(cls) -> int:
         index = client.get_index(cls.name)
 
@@ -150,12 +151,14 @@ class DocType(type):
 
         return db_count
 
+    @classmethod
     def clean(cls) -> int:
         index = client.get_index(cls.name)
         count = client.get_all_stats()["indexes"][cls.name]["numberOfDocuments"]
         index.delete_all_documents()
         return count
 
+    @classmethod
     def search(cls, term: str, **opt_params: Unpack[OptParams]):
         if not opt_params.get("attributes_to_search_on"):
             opt_params["attributes_to_search_on"] = cls.searchable_fields
@@ -178,6 +181,3 @@ class DocType(type):
         
         finally:
             return results, status_code
-
-
-class Document(metaclass=DocType): ...
