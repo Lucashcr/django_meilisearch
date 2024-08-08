@@ -157,7 +157,7 @@ class DocType(type):
         return count
 
     def search(cls, term: str, **opt_params: Unpack[OptParams]):
-        if not "attributes_to_search_on" in opt_params:
+        if not opt_params.get("attributes_to_search_on"):
             opt_params["attributes_to_search_on"] = cls.searchable_fields
         
         for key in list(opt_params.keys()):
