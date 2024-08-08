@@ -7,4 +7,7 @@ A Meilisearch integration for Django projects
 - [x] Implements documents class
 - [x] Implements search method
 - [x] Implements commands (create_index, delete_index, populate, rebuild, ...)
-- [ ] Implements views (explore indexed data)
+- [ ] Refactor DocType and Document classes to separated files
+- [ ] Refactor search method to return only results (returns TypedDict)
+- [ ] Create search method that returns queryset
+- [ ] Implements views (explore indexed data) ???
