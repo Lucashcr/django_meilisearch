@@ -1,6 +1,24 @@
-# django_meiliisearch
+# Django Meilisearch
 
-A Meilisearch integration for Django projects
+A Meilisearch integration for Django project
+
+## How to run
+
+Start a Docker container with Meilisearch:
+
+> docker run --rm -p 7700:7700 getmeili/meilisearch:latest
+
+Init a python virtual environment:
+
+> poetry install
+
+ou
+
+> python3 -m venv venv
+
+Run the Django development server
+
+> task serve
 
 ## Initial tasks
 
