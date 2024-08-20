@@ -26,7 +26,7 @@ Run the Django development server
 - [x] Implements search method
 - [x] Implements commands (create_index, delete_index, populate, rebuild, ...)
 - [x] Refactor DocType and Document classes to separated files
-- [ ] Create django signals to add, update or remove data from index
+- [x] Create django signals to add, update or remove data from index
 - [ ] Refactor search method to return only results (returns TypedDict)
 - [ ] Create search method that returns queryset
 - [ ] Create a progress viewer while indexing data

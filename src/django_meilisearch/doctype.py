@@ -1,4 +1,4 @@
-from django.db.models import Model
+from django.db.models import Model, signals
 from djantic import ModelSchema
 from pydantic import ConfigDict
 
@@ -13,6 +13,17 @@ class DocType(type):
     ]
 
     REGISTERED_INDEXES = {}
+    
+    def post_save_handler(sender, instance, **kwargs):
+        for _, Index in DocType.REGISTERED_INDEXES.items():
+            if isinstance(instance, Index.model):
+                Index.add_single_document(instance)
+
+
+    def post_delete_handler(sender, instance, **kwargs):
+        for _, Index in DocType.REGISTERED_INDEXES.items():
+            if isinstance(instance, Index.model):
+                Index.remove_single_document(instance)
 
     def __new__(cls, name: str, bases: tuple, namespace: dict):
         if name != "Document":
@@ -106,6 +117,9 @@ class DocType(type):
                     raise InvalidSortableFieldError(
                         f"{model.__name__} does not have a filterable_field named {field}"
                     )
+            
+            signals.post_save.connect(cls.post_save_handler, sender=model)
+            signals.post_delete.connect(cls.post_delete_handler, sender=model)
 
             cls.searchable_fields = searchable_fields
             cls.filterable_fields = filterable_fields

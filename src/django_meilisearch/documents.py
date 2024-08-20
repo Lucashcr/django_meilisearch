@@ -67,3 +67,20 @@ class Document(metaclass=DocType):
         
         finally:
             return results, status_code
+    
+    @classmethod
+    def destroy(cls):
+        client.delete_index(cls.name)
+    
+    @classmethod
+    def add_single_document(cls, instance):
+        index = client.index(cls.name)        
+        index.add_documents(
+            [cls.schema.from_django(instance).model_dump(mode='json')],
+            cls.primary_key_field
+        )
+    
+    @classmethod
+    def remove_single_document(cls, instance):
+        index = client.get_index(cls.name)
+        index.delete_document(instance.pk)
