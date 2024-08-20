@@ -2,6 +2,7 @@ from http import HTTPStatus
 from typing_extensions import Unpack
 
 from meilisearch.errors import MeilisearchApiError
+from alive_progress import alive_bar
 
 from django_meilisearch import client
 from django_meilisearch.exceptions import *
@@ -28,13 +29,15 @@ class Document(metaclass=DocType):
 
         db_count = cls.model.objects.count()
 
-        for i in range(0, db_count, 1000):
-            batch = cls.model.objects.all()[i : i + 1000]
-            index.add_documents(
-                [s.model_dump(mode='json') for s in cls.schema.from_django(batch, many=True)],
-                cls.primary_key_field,
-            )
-
+        with alive_bar(db_count, title=f"Indexing {cls.name}") as progress:
+            for i in range(0, db_count, 1000):
+                batch = cls.model.objects.all()[i : i + 1000]
+                index.add_documents(
+                    [s.model_dump(mode='json') for s in cls.schema.from_django(batch, many=True)],
+                    cls.primary_key_field,
+                )
+                progress(batch.count())
+        
         return db_count
 
     @classmethod
