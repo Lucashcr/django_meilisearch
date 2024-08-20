@@ -45,7 +45,7 @@ class Document(metaclass=DocType):
         return count
 
     @classmethod
-    def search(cls, term: str, **opt_params: Unpack[OptParams]):
+    def search(cls, term: str, to_queryset: bool = False, **opt_params: Unpack[OptParams]):
         if not opt_params.get("attributes_to_search_on"):
             opt_params["attributes_to_search_on"] = cls.searchable_fields
         
@@ -54,9 +54,18 @@ class Document(metaclass=DocType):
             if camel_key != key:
                 opt_params[camel_key] = opt_params[key]
                 del opt_params[key]
+        
+        if 'attributesToRetrieve' in opt_params and cls.primary_key_field not in opt_params['attributesToRetrieve']:
+            opt_params['attributesToRetrieve'] += [cls.primary_key_field]
+        
         try:
             index = client.get_index(cls.name)
             results = index.search(term, opt_params=opt_params)
+            
+            if to_queryset:
+                results['hits'] = cls.model.objects.filter(
+                    pk__in=[hit[cls.primary_key_field] for hit in results['hits']]
+                )
         
         except MeilisearchApiError as e:
             results = {**e.__dict__}

@@ -7,6 +7,7 @@ from api.documents import PostIndex
 def test_search(request):
     response, status_code = PostIndex.search(
         request.GET.get("q"),
+        # to_queryset=True,
         attributes_to_retrieve=["title", "content"],
         # attributes_to_highlight=["content"],
         sort=["created_at:desc"],
