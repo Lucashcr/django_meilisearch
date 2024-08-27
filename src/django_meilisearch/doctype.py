@@ -13,6 +13,7 @@ class DocType(type):
     ]
 
     REGISTERED_INDEXES = {}
+    INDEX_NAMES = {}
     
     def post_save_handler(sender, instance, **kwargs):
         for _, Index in DocType.REGISTERED_INDEXES.items():
@@ -137,6 +138,7 @@ class DocType(type):
             
             index_label = f"{namespace['model']._meta.app_label}.{namespace['__qualname__']}"
             cls.REGISTERED_INDEXES[index_label] = super().__new__(cls, name, bases, namespace)
+            cls.INDEX_NAMES[namespace["name"]] = index_label
             return cls.REGISTERED_INDEXES[index_label]
 
         return super().__new__(cls, name, bases, namespace)

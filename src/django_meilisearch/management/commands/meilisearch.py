@@ -12,11 +12,10 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("action", type=str, help="Action to perform")
-        parser.add_argument("index", type=str, help="Index name (app_label.IndexClass)")
+        parser.add_argument("index", type=str, help="Index name (index_name | app_label.IndexClass)")
 
     def handle(self, *args, **kwargs):
         action = kwargs.get("action")
-
         index = kwargs.get("index")
 
         if action not in self.ACTION_CHOICES:
@@ -29,9 +28,12 @@ class Command(BaseCommand):
             )
             return
 
-        if index not in Document.REGISTERED_INDEXES:
+        if index not in Document.REGISTERED_INDEXES and index not in Document.INDEX_NAMES:
             self.stdout.write(self.style.ERROR(f'Index not found: "{index}"'))
             return
+        
+        if index in Document.INDEX_NAMES:
+            index = Document.INDEX_NAMES[index]
 
         IndexCls = Document.REGISTERED_INDEXES[index]
         current_indexes = [index.uid for index in client.get_indexes()["results"]]
