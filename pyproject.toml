@@ -25,7 +25,7 @@ django-stubs = "^5.0.4"
 
 [tool.taskipy.tasks]
 serve = "python src/manage.py runserver"
-format = "black"
+format = "black src"
 lint = "pylint src"
 check = "mypy src"
 test = "pytest -v"

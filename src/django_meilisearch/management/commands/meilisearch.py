@@ -12,7 +12,9 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("action", type=str, help="Action to perform")
-        parser.add_argument("index", type=str, help="Index name (index_name | app_label.IndexClass)")
+        parser.add_argument(
+            "index", type=str, help="Index name (index_name | app_label.IndexClass)"
+        )
 
     def handle(self, *args, **kwargs):
         action = kwargs.get("action")
@@ -28,10 +30,13 @@ class Command(BaseCommand):
             )
             return
 
-        if index not in Document.REGISTERED_INDEXES and index not in Document.INDEX_NAMES:
+        if (
+            index not in Document.REGISTERED_INDEXES
+            and index not in Document.INDEX_NAMES
+        ):
             self.stdout.write(self.style.ERROR(f'Index not found: "{index}"'))
             return
-        
+
         if index in Document.INDEX_NAMES:
             index = Document.INDEX_NAMES[index]
 
@@ -67,7 +72,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(f'Index cleared: "{index}"'))
             self.stdout.write(self.style.SUCCESS(f"Documents removed: {count}"))
             return
-        
+
         if action == "rebuild":
             IndexCls.clean()
             count = IndexCls.populate()
