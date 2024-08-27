@@ -14,12 +14,49 @@ from meilisearch.errors import MeilisearchApiError
 
 class Document(metaclass=DocType):
     @classmethod
-    def create(cls):
-        return client.create_index(
+    def __await_task_completion(cls, task_uid):
+        task = client.get_task(task_uid)
+        while task.status in ["enqueued", "processing"]:
+            task = client.get_task(task_uid)
+        return task
+    
+    @classmethod
+    def acreate(cls):
+        task_info = client.create_index(
             cls.name,
             {"primaryKey": cls.primary_key_field}
         )
+        return client.get_task(task_info.task_uid)
+    
+    @classmethod
+    def create(cls):
+        task = cls.acreate()
+        return cls.__await_task_completion(task.uid)
+    
+    @classmethod
+    def apopulate(cls) -> int:
+        index = client.get_index(cls.name)
 
+        index.update_filterable_attributes(cls.filterable_fields)
+        index.update_searchable_attributes(cls.searchable_fields)
+        index.update_sortable_attributes(cls.sortable_fields)
+
+        db_count = cls.model.objects.count()
+
+        tasks = []
+        with alive_bar(db_count, title=f"Indexing {cls.name}") as progress:
+            for i in range(0, db_count, 1000):
+                batch = cls.model.objects.all()[i : i + 1000]
+                task_info = index.add_documents(
+                    [s.model_dump(mode='json') for s in cls.schema.from_django(batch, many=True)],
+                    cls.primary_key_field,
+                )
+                task = client.get_task(task_info.task_uid)
+                tasks.append(task)
+                progress(batch.count())
+        
+        return tasks
+    
     @classmethod
     def populate(cls) -> int:
         index = client.get_index(cls.name)
@@ -30,23 +67,30 @@ class Document(metaclass=DocType):
 
         db_count = cls.model.objects.count()
 
+        tasks = []
         with alive_bar(db_count, title=f"Indexing {cls.name}") as progress:
             for i in range(0, db_count, 1000):
                 batch = cls.model.objects.all()[i : i + 1000]
-                index.add_documents(
+                task_info = index.add_documents(
                     [s.model_dump(mode='json') for s in cls.schema.from_django(batch, many=True)],
                     cls.primary_key_field,
                 )
+                task = cls.__await_task_completion(task_info.task_uid)
+                tasks.append(task)
                 progress(batch.count())
         
-        return db_count
+        return tasks
+
+    @classmethod
+    def aclean(cls) -> int:
+        index = client.get_index(cls.name)
+        task_info = index.delete_all_documents()
+        return client.get_task(task_info.task_uid)
 
     @classmethod
     def clean(cls) -> int:
-        index = client.get_index(cls.name)
-        count = client.get_all_stats()["indexes"][cls.name]["numberOfDocuments"]
-        index.delete_all_documents()
-        return count
+        task = cls.aclean()
+        return cls.__await_task_completion(task.uid)
 
     @classmethod
     def search(cls, term: str, to_queryset: bool = False, **opt_params: Unpack[OptParams]):
@@ -82,18 +126,42 @@ class Document(metaclass=DocType):
             return results, status_code
     
     @classmethod
+    def adestroy(cls):
+        task_info = client.delete_index(cls.name)
+        return client.get_task(task_info.task_uid)
+
+    @classmethod
     def destroy(cls):
-        return client.delete_index(cls.name)
+        task = cls.adestroy()
+        return cls.__await_task_completion(task.uid)
     
     @classmethod
-    def add_single_document(cls, instance):
+    def aadd_single_document(cls, instance):
         index = client.index(cls.name)        
-        index.add_documents(
+        task_info = index.add_documents(
             [cls.schema.from_django(instance).model_dump(mode='json')],
             cls.primary_key_field
         )
+        return client.get_task(task_info.uid)
+
+    @classmethod
+    def add_single_document(cls, instance):
+        task = cls.aadd_single_document(instance)
+        return cls.__await_task_completion(task.uid)
+    
+    
+    @classmethod
+    def aremove_single_document(cls, instance):
+        index = client.get_index(cls.name)
+        task_info = index.delete_document(instance.pk)
+        return client.get_task(task_info.task_uid)
     
     @classmethod
     def remove_single_document(cls, instance):
+        task = cls.aremove_single_document(instance)
+        return cls.__await_task_completion(task.uid)
+    
+    @classmethod
+    def count(cls):
         index = client.get_index(cls.name)
-        index.delete_document(instance.pk)
+        return index.get_stats().number_of_documents
