@@ -1,7 +1,6 @@
 from http import HTTPStatus
 from typing_extensions import Unpack
 
-from meilisearch.errors import MeilisearchApiError
 from alive_progress import alive_bar
 
 from django_meilisearch import client
@@ -10,11 +9,13 @@ from django_meilisearch.types import OptParams
 from django_meilisearch.utils import convert_to_camel_case
 from django_meilisearch.doctype import DocType
 
+from meilisearch.errors import MeilisearchApiError
+
 
 class Document(metaclass=DocType):
     @classmethod
     def create(cls):
-        client.create_index(
+        return client.create_index(
             cls.name,
             {"primaryKey": cls.primary_key_field}
         )
@@ -82,7 +83,7 @@ class Document(metaclass=DocType):
     
     @classmethod
     def destroy(cls):
-        client.delete_index(cls.name)
+        return client.delete_index(cls.name)
     
     @classmethod
     def add_single_document(cls, instance):
