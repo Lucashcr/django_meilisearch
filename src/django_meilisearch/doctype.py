@@ -1,3 +1,5 @@
+from typing import Type
+
 from django.db.models import Model, signals
 from djantic import ModelSchema
 from pydantic import ConfigDict
@@ -12,8 +14,8 @@ class DocType(type):
         "model",
     ]
 
-    REGISTERED_INDEXES = {}
-    INDEX_NAMES = {}
+    REGISTERED_INDEXES: dict[str, Type] = {}
+    INDEX_NAMES: dict[str, str] = {}
     
     def post_save_handler(sender, instance, **kwargs):
         for _, Index in DocType.REGISTERED_INDEXES.items():
@@ -126,12 +128,12 @@ class DocType(type):
             cls.filterable_fields = filterable_fields
             cls.sortable_fields = sortable_fields
                         
-            cls.schema = type(
+            cls.schema: ModelSchema = type(
                 f"{name}Schema",
                 (ModelSchema,),
                 {
                     "model_config": ConfigDict(
-                        model=model,
+                        model=model, # type: ignore
                     )
                 }
             )

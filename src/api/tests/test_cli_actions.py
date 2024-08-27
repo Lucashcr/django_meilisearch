@@ -12,7 +12,7 @@ from api.models import Post
 
 # Create your tests here.
 class TestInitialize(TestCase):
-    def setUp(self) -> None:
+    def setUp(self):
         data = json.load(open("src/api/tests/data/posts.json"))
         Post.objects.bulk_create([Post(**post) for post in data])
     

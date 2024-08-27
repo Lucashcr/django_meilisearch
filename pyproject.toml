@@ -20,18 +20,24 @@ pytest-cov = "^5.0.0"
 black = "^24.4.2"
 taskipy = "^1.12.2"
 pylint = "^3.1.0"
+mypy = "^1.11.2"
+django-stubs = "^5.0.4"
 
 [tool.taskipy.tasks]
 serve = "python src/manage.py runserver"
 format = "black"
-lint = "pylint"
-test = "pytest -vv"
+lint = "pylint src"
+check = "mypy src"
+test = "pytest -v"
 coverage = "coverage"
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "mysite.settings"
 python_files = ["test_*", "*_test", "tests/*"]
 pythonpath = ["src"]
+
+[tool.mypy]
+ignore_missing_imports = true
 
 [tool.poetry.scripts]
 check = "scripts.check:run"

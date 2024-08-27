@@ -7,11 +7,10 @@ class OptParams(TypedDict):
     page: int
     filter: str | list
     facets: list[str]
-    attributtes_to_retrieve: list[str]
+    attributes_to_retrieve: list[str]
     attributes_to_highlight: list[str]
     crop_length: int
     crop_marker: str
-    attributes_to_highlight: list[str]
     highlight_pre_tag: str
     highlight_post_tag: str
     show_matches_position: bool
