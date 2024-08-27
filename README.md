@@ -28,5 +28,10 @@ Run the Django development server
 - [x] Refactor DocType and Document classes to separated files
 - [x] Create django signals to add, update or remove data from index
 - [x] Create search method that returns queryset
-- [ ] Create a progress viewer while indexing data
+- [x] Create a progress viewer while indexing data
+- [x] Config Mypy type checking and solve errors
+- [x] Config Black code format and apply it
+- [ ] Solve Pylint advices
+- [ ] Review tests coverage
+- [ ] Implements GitHub Actions workflow
 - [ ] Implements views (explore indexed data) ???
