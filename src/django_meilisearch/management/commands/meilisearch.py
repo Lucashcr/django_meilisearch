@@ -1,4 +1,3 @@
-from django.apps import apps
 from django.core.management.base import BaseCommand
 
 from django_meilisearch import client
@@ -8,74 +7,199 @@ from django_meilisearch.documents import Document
 class Command(BaseCommand):
     help = "This command will help you to interact with MeiliSearch"
 
-    ACTION_CHOICES = ["create", "delete", "populate", "clean", "rebuild"]
+    ACTION_CHOICES = [
+        "acreate",
+        "adestroy",
+        "apopulate",
+        "aclean",
+        "arebuild",
+        "create",
+        "destroy",
+        "populate",
+        "clean",
+        "rebuild",
+    ]
 
     def add_arguments(self, parser):
         parser.add_argument("action", type=str, help="Action to perform")
         parser.add_argument(
-            "index", type=str, help="Index name (index_name | app_label.IndexClass)"
+            "indexes",
+            nargs="*",
+            type=str,
+            help="Index names (index_name | app_label.IndexClass)",
+        )
+        parser.add_argument(
+            "--yes",
+            "-y",
+            action="store_true",
+            help="Confirm before executing the action",
         )
 
     def handle(self, *args, **kwargs):
         action = kwargs.get("action")
-        index = kwargs.get("index")
+        indexes = kwargs.get("indexes")
+        confirm = kwargs.get("yes")
 
         if action not in self.ACTION_CHOICES:
-            self.stdout.write(self.style.ERROR(f'Invalid action: "{action}"'))
+            self.error(f'Invalid action: "{action}"')
             return
 
-        if index is None:
-            self.stdout.write(
-                self.style.ERROR("Not enough arguments: Index name is required")
-            )
-            return
+        if not indexes:
+            indexes = Document.INDEX_NAMES.keys()
 
-        if (
-            index not in Document.REGISTERED_INDEXES
-            and index not in Document.INDEX_NAMES
-        ):
-            self.stdout.write(self.style.ERROR(f'Index not found: "{index}"'))
-            return
+        for index in indexes:
+            if (
+                index not in Document.REGISTERED_INDEXES
+                and index not in Document.INDEX_NAMES
+            ):
+                self.error(f'Index not found: "{index}"')
+                continue
 
-        if index in Document.INDEX_NAMES:
-            index = Document.INDEX_NAMES[index]
+            if index in Document.INDEX_NAMES:
+                index = Document.INDEX_NAMES[index]
 
-        IndexCls = Document.REGISTERED_INDEXES[index]
-        current_indexes = [index.uid for index in client.get_indexes()["results"]]
+            IndexCls: Document = Document.REGISTERED_INDEXES[index]
+            current_indexes = [index.uid for index in client.get_indexes()["results"]]
 
-        if action == "create":
-            if IndexCls.name in current_indexes:
-                self.stdout.write(self.style.ERROR(f'Index already exists: "{index}"'))
-                return
+            if action == "acreate":
+                if IndexCls.name in current_indexes:
+                    self.error(f'Index already exists: "{index}"')
+                    continue
 
-            IndexCls.create()
-            self.stdout.write(self.style.SUCCESS(f'Index created: "{index}"'))
-            return
+                task = IndexCls.acreate()
+                self.info(f'Index being created: "{index}"')
+                self.info(f"Task ID: {task.uid}")
+                continue
 
-        if not IndexCls.name in current_indexes:
-            self.stdout.write(self.style.ERROR(f'Index not found: "{index}"'))
-            return
+            elif action == "create":
+                if IndexCls.name in current_indexes:
+                    self.error(f'Index already exists: "{index}"')
+                    continue
 
-        if action == "populate":
-            count = IndexCls.populate()
-            self.stdout.write(self.style.SUCCESS(f'Index populated: "{index}"'))
-            self.stdout.write(self.style.SUCCESS(f"Documents indexed: {count}"))
-            return
+                task = IndexCls.create()
+                if task.status == "failed":
+                    self.error(f'Failed to create index: "{index}"')
+                    self.error(f"Error: {task.details}")
+                elif task.status == "succeeded":
+                    self.success(f'Index created successfully: "{index}"')
+                else:
+                    self.info(f'Index creation status: "{index}"')
+                    self.info(f"Details: {task.details}")
+                continue
 
-        if action == "delete":
-            client.delete_index(IndexCls.name)
-            self.stdout.write(self.style.SUCCESS(f'Index deleted: "{index}"'))
-            return
+            elif IndexCls.name not in current_indexes:
+                self.error(f'Index not found: "{index}"')
+                continue
 
-        if action == "clean":
-            count = IndexCls.clean()
-            self.stdout.write(self.style.SUCCESS(f'Index cleared: "{index}"'))
-            self.stdout.write(self.style.SUCCESS(f"Documents removed: {count}"))
-            return
+            if not confirm:
+                self.question(
+                    f'Are you sure you want to perform the action "{action}" on index "{index}"? (y/n):'
+                )
+                confirmation = input()
+                if confirmation.lower() != "y":
+                    self.error(
+                        f'Action cancelled by user: "{action}" on index "{index}"'
+                    )
+                    continue
 
-        if action == "rebuild":
-            IndexCls.clean()
-            count = IndexCls.populate()
-            self.stdout.write(self.style.SUCCESS(f'Index rebuilt: "{index}"'))
-            self.stdout.write(self.style.SUCCESS(f"Documents reindexed: {count}"))
-            return
+            if action == "apopulate":
+                tasks = IndexCls.apopulate()
+                count = sum(task.details["receivedDocuments"] for task in tasks)
+                self.success(f'Index being populated: "{index}"')
+                self.success(f"Documents being indexed: {count}")
+                self.info(f"Task IDs: {', '.join(str(task.uid) for task in tasks)}")
+
+            elif action == "populate":
+                tasks = IndexCls.populate()
+                count = sum(task.details["indexedDocuments"] for task in tasks)
+
+                if task.status == "failed":
+                    self.error(f'Failed to populate index: "{index}"')
+                    self.error(f"Error: {task.details}")
+                elif task.status == "succeeded":
+                    self.success(f'Index populated successfully: "{index}"')
+                else:
+                    if all(task.status == "succeeded" for task in tasks):
+                        self.success(f'Index populated successfully: "{index}"')
+                        self.success(f"Documents indexed: {count}")
+                        continue
+
+                    for task in tasks:
+                        if task.status != "succeeded":
+                            self.error(f'Failed to populate index: "{index}"')
+                            self.error(f"Error: {task.details}")
+
+            elif action == "adestroy":
+                task = IndexCls.adestroy()
+
+                self.success(f'Index being destroyed: "{index}"')
+                self.info(f"Task ID: {task.uid}")
+
+            elif action == "destroy":
+                task = IndexCls.destroy()
+
+                if task.status == "failed":
+                    self.error(f'Failed to destroy index: "{index}"')
+                    self.error(f"Error: {task.details}")
+                elif task.status == "succeeded":
+                    self.success(f'Index destroyed successfully: "{index}"')
+                else:
+                    self.info(f'Index destroying status: "{task.status}"')
+                    self.info(f"Details: {task.details}")
+
+            elif action == "aclean":
+                task = IndexCls.aclean()
+                self.success(f'Index cleared: "{index}"')
+                self.info(f"Task ID: {task.uid}")
+
+            elif action == "clean":
+                task = IndexCls.clean()
+                count = task.details["deletedDocuments"]
+
+                if task.status == "failed":
+                    self.error(f'Failed to clean index: "{index}"')
+                    self.error(f"Error: {task.details}")
+                elif task.status == "succeeded":
+                    self.success(f'Index cleaned successfully: "{index}"')
+                    self.success(f"Documents deleted: {count}")
+                else:
+                    self.info(f'Index destroying status: "{task.status}"')
+                    self.info(f"Details: {task.details}")
+
+            elif action == "arebuild":
+                IndexCls.aclean()
+                tasks = IndexCls.apopulate()
+                count = sum(task.details["receivedDocuments"] for task in tasks)
+
+                self.success(f'Index being rebuilt: "{index}"')
+                self.success(f"Documents being reindexed: {count}")
+                self.info(f"Task ID: {task.uid}")
+
+            elif action == "rebuild":
+                IndexCls.clean()
+                tasks = IndexCls.populate()
+                count = sum(task.details["indexedDocuments"] for task in tasks)
+
+                if task.status == "failed":
+                    self.error(f'Failed to destroy index: "{index}"')
+                    self.error(f"Error: {task.details}")
+                elif task.status == "succeeded":
+                    self.success(f'Index destroyed successfully: "{index}"')
+                else:
+                    self.info(f'Index destroying status: "{task.status}"')
+                    self.info(f"Details: {task.details}")
+
+            else:
+                self.error(f'Invalid action: "{action}"')
+
+    def error(self, message):
+        self.stdout.write(self.style.ERROR(f"[ERROR]:   {message}"))
+
+    def success(self, message):
+        self.stdout.write(self.style.SUCCESS(f"[SUCCESS]: {message}"))
+
+    def info(self, message):
+        self.stdout.write(f"[INFO]:    {message}")
+
+    def question(self, message):
+        self.stdout.write(self.style.WARNING(f"[WARNING]: {message}"), ending=" ")
