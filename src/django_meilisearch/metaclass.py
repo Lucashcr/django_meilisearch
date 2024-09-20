@@ -16,7 +16,7 @@ from django_meilisearch.exceptions import (
 from django_meilisearch.utils import exists_field_in_namespace
 
 
-class DocType(type):
+class BaseIndexMetaclass(type):
     __REQUIRED_FIELDS__ = [
         "name",
         "model",
@@ -26,23 +26,23 @@ class DocType(type):
     INDEX_NAMES: dict[str, str] = {}
 
     def post_save_handler(sender, instance, **kwargs):
-        for _, Index in DocType.REGISTERED_INDEXES.items():
+        for _, Index in BaseIndexMetaclass.REGISTERED_INDEXES.items():
             if isinstance(instance, Index.model):
                 Index.add_single_document(instance)
 
     def post_delete_handler(sender, instance, **kwargs):
-        for _, Index in DocType.REGISTERED_INDEXES.items():
+        for _, Index in BaseIndexMetaclass.REGISTERED_INDEXES.items():
             if isinstance(instance, Index.model):
                 Index.remove_single_document(instance)
 
     def __new__(cls, name: str, bases: tuple, namespace: dict):
-        if name != "Document":
+        if name != "BaseIndex":
             if any(
                 not exists_field_in_namespace(field, namespace)
-                for field in DocType.__REQUIRED_FIELDS__
+                for field in BaseIndexMetaclass.__REQUIRED_FIELDS__
             ):
                 raise MissingRequiredFieldError(
-                    f"{name} must have at least {DocType.__REQUIRED_FIELDS__} fields"
+                    f"{name} must have at least {BaseIndexMetaclass.__REQUIRED_FIELDS__} fields"
                 )
 
             model = namespace["model"]

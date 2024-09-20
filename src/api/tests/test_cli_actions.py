@@ -6,7 +6,7 @@ from django_meilisearch import client
 
 from meilisearch.errors import MeilisearchApiError
 
-from api.documents import PostIndex
+from api.index import PostIndex
 from api.models import Post
 
 

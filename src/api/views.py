@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 
-from api.documents import PostIndex
+from api.index import PostIndex
 
 
 # Create your views here.

@@ -3,25 +3,43 @@ from typing import Type
 from typing_extensions import Unpack
 
 from alive_progress import alive_bar
-
 from django.db.models import Model
+from meilisearch.errors import MeilisearchApiError
+from meilisearch.models.task import Task
 
 from django_meilisearch import client
 from django_meilisearch.exceptions import *
 from django_meilisearch.types import OptParams
 from django_meilisearch.utils import convert_to_camel_case
-from django_meilisearch.doctype import DocType
-
-from meilisearch.errors import MeilisearchApiError
-from meilisearch.models.task import Task
+from django_meilisearch.metaclass import BaseIndexMetaclass
 
 
-class Document(metaclass=DocType):
+class BaseIndex(metaclass=BaseIndexMetaclass):
+    """Index document for a Django model.
+
+    Attributes:
+        name (str): Index name.
+        model (Type[Model]): Django model.
+        primary_key_field (str): Primary key field of the model. Defaults to model's primary key field.
+        searchable_fields (list[str]): Fields to search on. Defaults to all fields in the model.
+        filterable_fields (list[str]): Fields to filter on. Defaults to all fields in the model.
+        sortable_fields (list[str]): Fields to sort on. Defaults to all fields in the model.
+    """
+
     name: str
     model: Type[Model]
 
     @classmethod
-    def __await_task_completion(cls, task_uid) -> Task:
+    def __await_task_completion(cls, task_uid: int) -> Task:
+        """Wait for a task to complete.
+
+        Args:
+            task_uid (int): Task UID.
+
+        Returns:
+            Task: Meilisearch task object.
+        """
+
         task = client.get_task(task_uid)
         while task.status in ["enqueued", "processing"]:
             task = client.get_task(task_uid)
@@ -29,16 +47,35 @@ class Document(metaclass=DocType):
 
     @classmethod
     def acreate(cls) -> Task:
+        """Create the index asynchronously.
+
+        Returns:
+            Task: Meilisearch task object.
+        """
+
         task_info = client.create_index(cls.name, {"primaryKey": cls.primary_key_field})
         return client.get_task(task_info.task_uid)
 
     @classmethod
     def create(cls) -> Task:
+        """Create the index.
+
+        Returns:
+            Task: Meiliseach task object.
+        """
+
         task = cls.acreate()
         return cls.__await_task_completion(task.uid)
 
     @classmethod
     def apopulate(cls) -> list[Task]:
+        """Populate the index asynchronously.
+        The method will index the entire database in batches of 1000.
+
+        Returns:
+            list[Task]: List of Meilisearch task objects.
+        """
+
         index = client.get_index(cls.name)
 
         index.update_filterable_attributes(cls.filterable_fields)
@@ -64,6 +101,13 @@ class Document(metaclass=DocType):
 
     @classmethod
     def populate(cls) -> list[Task]:
+        """Populate the index.
+        The method will index the entire database in batches of 1000.
+
+        Returns:
+            list[Task]: List of Meilisearch task objects.
+        """
+
         index = client.get_index(cls.name)
 
         index.update_filterable_attributes(cls.filterable_fields)
@@ -91,12 +135,24 @@ class Document(metaclass=DocType):
 
     @classmethod
     def aclean(cls) -> Task:
+        """Delete all documents from the index asynchronously.
+
+        Returns:
+            Task: Meilisearch task object.
+        """
+
         index = client.get_index(cls.name)
         task_info = index.delete_all_documents()
         return client.get_task(task_info.task_uid)
 
     @classmethod
     def clean(cls) -> Task:
+        """Delete all documents from the index.
+
+        Returns:
+            Task: Meilisearch task object.
+        """
+
         task = cls.aclean()
         return cls.__await_task_completion(task.uid)
 
@@ -104,6 +160,16 @@ class Document(metaclass=DocType):
     def search(
         cls, term: str, to_queryset: bool = False, **opt_params: Unpack[OptParams]
     ) -> tuple[dict, HTTPStatus]:
+        """Do a search on the index.
+
+        Args:
+            term (str): Search term.
+            to_queryset (bool, optional): If True, the search results will be converted to Django model instances. Defaults to False.
+
+        Returns:
+            tuple[dict, HTTPStatus]: Tuple containing search results and the http status code.
+        """
+
         if not opt_params.get("attributes_to_search_on"):
             opt_params["attributes_to_search_on"] = cls.searchable_fields
 
@@ -142,16 +208,37 @@ class Document(metaclass=DocType):
 
     @classmethod
     def adestroy(cls) -> Task:
+        """Delete the index asynchronously.
+
+        Returns:
+            Task: Meilisearch task object.
+        """
+
         task_info = client.delete_index(cls.name)
         return client.get_task(task_info.task_uid)
 
     @classmethod
     def destroy(cls) -> Task:
+        """Delete the index.
+
+        Returns:
+            Task: Meilisearch task object.
+        """
+
         task = cls.adestroy()
         return cls.__await_task_completion(task.uid)
 
     @classmethod
-    def aadd_single_document(cls, instance) -> Task:
+    def aadd_single_document(cls, instance: Model) -> Task:
+        """Add a single document to the index asynchronously.
+
+        Args:
+            instance (django.db.models.Model): Django model instance.
+
+        Returns:
+            Task: Meilisearch task object.
+        """
+
         index = client.index(cls.name)
         task_info = index.add_documents(
             [cls.schema.from_django(instance).model_dump(mode="json")],
@@ -160,22 +247,55 @@ class Document(metaclass=DocType):
         return client.get_task(task_info.task_uid)
 
     @classmethod
-    def add_single_document(cls, instance) -> Task:
+    def add_single_document(cls, instance: Model) -> Task:
+        """Add a single document to the index.
+
+        Args:
+            instance (django.db.models.Model): Django model instance.
+
+        Returns:
+            Task: Meilisearch task object.
+        """
+
         task = cls.aadd_single_document(instance)
         return cls.__await_task_completion(task.uid)
 
     @classmethod
-    def aremove_single_document(cls, instance) -> Task:
+    def aremove_single_document(cls, instance: Model) -> Task:
+        """Remove a single document from the index asynchronously.
+
+        Args:
+            instance (Model): Django model instance.
+
+        Returns:
+            Task: Meilisearch task object.
+        """
+
         index = client.get_index(cls.name)
         task_info = index.delete_document(instance.pk)
         return client.get_task(task_info.task_uid)
 
     @classmethod
-    def remove_single_document(cls, instance) -> Task:
+    def remove_single_document(cls, instance: Model) -> Task:
+        """Remove a single document from the index.
+
+        Args:
+            instance (Model): Django model instance.
+
+        Returns:
+            Task: Meilisearch task object.
+        """
+
         task = cls.aremove_single_document(instance)
         return cls.__await_task_completion(task.uid)
 
     @classmethod
     def count(cls) -> int:
+        """Get the number of documents in the index.
+
+        Returns:
+            int: Number of documents in the index.
+        """
+
         index = client.get_index(cls.name)
         return index.get_stats().number_of_documents

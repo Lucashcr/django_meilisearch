@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from django_meilisearch import client
-from django_meilisearch.documents import Document
+from django_meilisearch.index import BaseIndex
 
 
 class Command(BaseCommand):
@@ -45,20 +45,20 @@ class Command(BaseCommand):
             return
 
         if not indexes:
-            indexes = Document.INDEX_NAMES.keys()
+            indexes = BaseIndex.INDEX_NAMES.keys()
 
         for index in indexes:
             if (
-                index not in Document.REGISTERED_INDEXES
-                and index not in Document.INDEX_NAMES
+                index not in BaseIndex.REGISTERED_INDEXES
+                and index not in BaseIndex.INDEX_NAMES
             ):
                 self.error(f'Index not found: "{index}"')
                 continue
 
-            if index in Document.INDEX_NAMES:
-                index = Document.INDEX_NAMES[index]
+            if index in BaseIndex.INDEX_NAMES:
+                index = BaseIndex.INDEX_NAMES[index]
 
-            IndexCls: Document = Document.REGISTERED_INDEXES[index]
+            IndexCls: BaseIndex = BaseIndex.REGISTERED_INDEXES[index]
             current_indexes = [index.uid for index in client.get_indexes()["results"]]
 
             if action == "acreate":
@@ -104,14 +104,14 @@ class Command(BaseCommand):
 
             if action == "apopulate":
                 tasks = IndexCls.apopulate()
-                count = sum(task.details["receivedDocuments"] for task in tasks)
+                count = sum(task.details["receivedIndexs"] for task in tasks)
                 self.success(f'Index being populated: "{index}"')
-                self.success(f"Documents being indexed: {count}")
+                self.success(f"Indexs being indexed: {count}")
                 self.info(f"Task IDs: {', '.join(str(task.uid) for task in tasks)}")
 
             elif action == "populate":
                 tasks = IndexCls.populate()
-                count = sum(task.details["indexedDocuments"] for task in tasks)
+                count = sum(task.details["indexedIndexs"] for task in tasks)
 
                 if task.status == "failed":
                     self.error(f'Failed to populate index: "{index}"')
@@ -121,7 +121,7 @@ class Command(BaseCommand):
                 else:
                     if all(task.status == "succeeded" for task in tasks):
                         self.success(f'Index populated successfully: "{index}"')
-                        self.success(f"Documents indexed: {count}")
+                        self.success(f"Indexs indexed: {count}")
                         continue
 
                     for task in tasks:
@@ -154,14 +154,14 @@ class Command(BaseCommand):
 
             elif action == "clean":
                 task = IndexCls.clean()
-                count = task.details["deletedDocuments"]
+                count = task.details["deletedIndexs"]
 
                 if task.status == "failed":
                     self.error(f'Failed to clean index: "{index}"')
                     self.error(f"Error: {task.details}")
                 elif task.status == "succeeded":
                     self.success(f'Index cleaned successfully: "{index}"')
-                    self.success(f"Documents deleted: {count}")
+                    self.success(f"Indexs deleted: {count}")
                 else:
                     self.info(f'Index destroying status: "{task.status}"')
                     self.info(f"Details: {task.details}")
@@ -169,16 +169,16 @@ class Command(BaseCommand):
             elif action == "arebuild":
                 IndexCls.aclean()
                 tasks = IndexCls.apopulate()
-                count = sum(task.details["receivedDocuments"] for task in tasks)
+                count = sum(task.details["receivedIndexs"] for task in tasks)
 
                 self.success(f'Index being rebuilt: "{index}"')
-                self.success(f"Documents being reindexed: {count}")
+                self.success(f"Indexs being reindexed: {count}")
                 self.info(f"Task ID: {task.uid}")
 
             elif action == "rebuild":
                 IndexCls.clean()
                 tasks = IndexCls.populate()
-                count = sum(task.details["indexedDocuments"] for task in tasks)
+                count = sum(task.details["indexedIndexs"] for task in tasks)
 
                 if task.status == "failed":
                     self.error(f'Failed to destroy index: "{index}"')

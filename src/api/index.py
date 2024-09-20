@@ -1,9 +1,9 @@
-from django_meilisearch.documents import Document
+from django_meilisearch.index import BaseIndex
 
 from api.models import Post
 
 
-class PostIndex(Document):
+class PostIndex(BaseIndex):
     name = "posts"
     model = Post
     # primary_key_field = "id"        # (default is models pk field)
