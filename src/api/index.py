@@ -1,9 +1,17 @@
-from django_meilisearch.index import BaseIndex
+"""
+This module contains the indexes definition for the api app.
+"""
+
+from django_meilisearch.indexes import BaseIndex
 
 from api.models import Post
 
 
 class PostIndex(BaseIndex):
+    """
+    Index definition for the Post model.
+    """
+
     name = "posts"
     model = Post
     # primary_key_field = "id"        # (default is models pk field)

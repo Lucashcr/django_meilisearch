@@ -1,3 +1,8 @@
+"""
+This module contains the Document class, which provides methods for creating,
+populating, rebuilding, deleting, cleaning and searching an index in MeiliSearch.
+"""
+
 from http import HTTPStatus
 from typing import Type
 from typing_extensions import Unpack
@@ -8,7 +13,6 @@ from meilisearch.errors import MeilisearchApiError
 from meilisearch.models.task import Task
 
 from django_meilisearch import client
-from django_meilisearch.exceptions import *
 from django_meilisearch.types import OptParams
 from django_meilisearch.utils import convert_to_camel_case
 from django_meilisearch.metaclass import BaseIndexMetaclass
@@ -20,10 +24,14 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
     Attributes:
         name (str): Index name.
         model (Type[Model]): Django model.
-        primary_key_field (str): Primary key field of the model. Defaults to model's primary key field.
-        searchable_fields (list[str]): Fields to search on. Defaults to all fields in the model.
-        filterable_fields (list[str]): Fields to filter on. Defaults to all fields in the model.
-        sortable_fields (list[str]): Fields to sort on. Defaults to all fields in the model.
+        primary_key_field (str): Primary key field of the model.
+        Defaults to model's primary key field.
+        searchable_fields (list[str]): Fields to search on.
+        Defaults to all fields in the model.
+        filterable_fields (list[str]): Fields to filter on.
+        Defaults to all fields in the model.
+        sortable_fields (list[str]): Fields to sort on.
+        Defaults to all fields in the model.
     """
 
     name: str
@@ -129,7 +137,7 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
                 )
                 task = cls.__await_task_completion(task_info.task_uid)
                 tasks.append(task)
-                progress(batch.count())
+                progress(batch.count())  # pylint: disable=not-callable
 
         return tasks
 
@@ -164,7 +172,8 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
 
         Args:
             term (str): Search term.
-            to_queryset (bool, optional): If True, the search results will be converted to Django model instances. Defaults to False.
+            to_queryset (bool, optional): If True, the search results will be converted
+            to Django model instances. Defaults to False.
 
         Returns:
             tuple[dict, HTTPStatus]: Tuple containing search results and the http status code.
@@ -203,8 +212,7 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
         else:
             status_code = HTTPStatus.OK if results.get("hits") else HTTPStatus.NOT_FOUND
 
-        finally:
-            return results, status_code
+        return results, status_code
 
     @classmethod
     def adestroy(cls) -> Task:

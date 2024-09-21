@@ -1,3 +1,9 @@
+"""
+This module defines the Document metaclass that is used to create the Document class.
+
+The Document class is used to define the structure of the index that will be created in MeiliSearch.
+"""
+
 from typing import Type
 
 from django.db.models import Model, signals
@@ -14,9 +20,18 @@ from django_meilisearch.exceptions import (
     MissingRequiredFieldError,
 )
 from django_meilisearch.utils import exists_field_in_namespace
+from django_meilisearch.validators import (
+    validate_filterable_fields,
+    validate_searchable_fields,
+    validate_sortable_fields,
+)
 
 
 class BaseIndexMetaclass(type):
+    """
+    The metaclass for the BaseIndex class.
+    """
+
     __REQUIRED_FIELDS__ = [
         "name",
         "model",
@@ -25,17 +40,28 @@ class BaseIndexMetaclass(type):
     REGISTERED_INDEXES: dict[str, Type] = {}
     INDEX_NAMES: dict[str, str] = {}
 
-    def post_save_handler(sender, instance, **kwargs):
-        for _, Index in BaseIndexMetaclass.REGISTERED_INDEXES.items():
-            if isinstance(instance, Index.model):
-                Index.add_single_document(instance)
+    @staticmethod
+    def post_save_handler(_, instance, **kwargs):
+        """
+        The post_save signal handler that adds the document to the index.
+        """
+        for _, index in BaseIndexMetaclass.REGISTERED_INDEXES.items():
+            if isinstance(instance, index.model):
+                index.add_single_document(instance)
 
-    def post_delete_handler(sender, instance, **kwargs):
-        for _, Index in BaseIndexMetaclass.REGISTERED_INDEXES.items():
-            if isinstance(instance, Index.model):
-                Index.remove_single_document(instance)
+    @staticmethod
+    def post_delete_handler(_, instance, **kwargs):
+        """
+        The post_delete signal handler that removes the document from the index.
+        """
+        for _, index in BaseIndexMetaclass.REGISTERED_INDEXES.items():
+            if isinstance(instance, index.model):
+                index.remove_single_document(instance)
 
-    def __new__(cls, name: str, bases: tuple, namespace: dict):
+    def __new__(mcs, name: str, bases: tuple, namespace: dict):
+        """
+        The new method of the metaclass that validates the fields of the class.
+        """
         if name != "BaseIndex":
             if any(
                 not exists_field_in_namespace(field, namespace)
@@ -49,9 +75,7 @@ class BaseIndexMetaclass(type):
 
             model_field_names = [field.name for field in model._meta.fields]
             searchable_fields = namespace.get("searchable_fields", model_field_names)
-
             filterable_fields = namespace.get("filterable_fields", model_field_names)
-
             sortable_fields = namespace.get("sortable_fields", model_field_names)
 
             if not isinstance(namespace["name"], str):
@@ -60,60 +84,23 @@ class BaseIndexMetaclass(type):
             if not issubclass(model, Model):
                 raise InvalidDjangoModelError(f"{name}.model must be a Django Model")
 
-            cls.primary_key_field = getattr(
+            mcs.primary_key_field = getattr(
                 namespace, "primary_key_field", model._meta.pk.name
             )
 
-            if not isinstance(cls.primary_key_field, str):
+            if not isinstance(mcs.primary_key_field, str):
                 raise InvalidPrimaryKeyError(
                     f"{name}.Django.primary_key_field must be a string"
                 )
-            if not hasattr(model, cls.primary_key_field):
+            if not hasattr(model, mcs.primary_key_field):
                 raise InvalidPrimaryKeyError(
-                    f"{model.__name__} does not have a primary_key_field named {cls.primary_key_field}"
+                    f"{model.__name__} does not have a"
+                    f"primary_key_field named {mcs.primary_key_field}"
                 )
 
-            if not isinstance(searchable_fields, list):
-                if (
-                    isinstance(searchable_fields, str)
-                    and searchable_fields == "__all__"
-                ):
-                    searchable_fields = model_field_names
-                else:
-                    raise InvalidSearchableFieldError(
-                        f"{name}.searchable_fields must be a list or '__all__'"
-                    )
-
-                raise InvalidSearchableFieldError(
-                    f"{name}.searchable_fields must be a list or '__all__'"
-                )
-
-            if not isinstance(filterable_fields, list):
-                if (
-                    isinstance(filterable_fields, str)
-                    and filterable_fields == "__all__"
-                ):
-                    filterable_fields = model_field_names
-                else:
-                    raise InvalidFilterableFieldError(
-                        f"{name}.filterable_fields must be a list or '__all__'"
-                    )
-
-                raise InvalidFilterableFieldError(
-                    f"{name}.filterable_fields must be a list or '__all__'"
-                )
-
-            if not isinstance(sortable_fields, list):
-                if isinstance(sortable_fields, str) and sortable_fields == "__all__":
-                    sortable_fields = model_field_names
-                else:
-                    raise InvalidSortableFieldError(
-                        f"{name}.sortable_fields must be a list or '__all__'"
-                    )
-
-                raise InvalidSortableFieldError(
-                    f"{name}.sortable_fields must be a list or '__all__'"
-                )
+            validate_searchable_fields(name, searchable_fields, model_field_names)
+            validate_filterable_fields(name, filterable_fields, model_field_names)
+            validate_sortable_fields(name, sortable_fields, model_field_names)
 
             for field in searchable_fields:
                 if not hasattr(model, field):
@@ -133,14 +120,14 @@ class BaseIndexMetaclass(type):
                         f"{model.__name__} does not have a filterable_field named {field}"
                     )
 
-            signals.post_save.connect(cls.post_save_handler, sender=model)
-            signals.post_delete.connect(cls.post_delete_handler, sender=model)
+            signals.post_save.connect(mcs.post_save_handler, sender=model)
+            signals.post_delete.connect(mcs.post_delete_handler, sender=model)
 
-            cls.searchable_fields = searchable_fields
-            cls.filterable_fields = filterable_fields
-            cls.sortable_fields = sortable_fields
+            mcs.searchable_fields = searchable_fields
+            mcs.filterable_fields = filterable_fields
+            mcs.sortable_fields = sortable_fields
 
-            cls.schema: ModelSchema = type(
+            mcs.schema: ModelSchema = type(
                 f"{name}Schema",
                 (ModelSchema,),
                 {
@@ -153,10 +140,10 @@ class BaseIndexMetaclass(type):
             index_label = (
                 f"{namespace['model']._meta.app_label}.{namespace['__qualname__']}"
             )
-            cls.REGISTERED_INDEXES[index_label] = super().__new__(
-                cls, name, bases, namespace
+            mcs.REGISTERED_INDEXES[index_label] = super().__new__(
+                mcs, name, bases, namespace
             )
-            cls.INDEX_NAMES[namespace["name"]] = index_label
-            return cls.REGISTERED_INDEXES[index_label]
+            mcs.INDEX_NAMES[namespace["name"]] = index_label
+            return mcs.REGISTERED_INDEXES[index_label]
 
-        return super().__new__(cls, name, bases, namespace)
+        return super().__new__(mcs, name, bases, namespace)

@@ -1,7 +1,16 @@
+"""
+This module contains the type definitions which are used in the library.
+"""
+
 from typing import TypedDict
 
 
 class OptParams(TypedDict):
+    """
+    This class defines the type of the optional parameters which are used in the
+    search method.
+    """
+
     offset: int
     limit: int
     hits_per_page: int
