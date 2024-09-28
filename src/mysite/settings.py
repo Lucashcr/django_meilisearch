@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -125,7 +126,7 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 DJANGO_MEILISEARCH = {
-    "url": "http://localhost:7700",  # Your MeiliSearch host
-    "api_key": "6_ukFwQ5UvJ4ifu9wZiczIifbBVZ8nOy-W0XbfjS9I4",  # Your MeiliSearch master key
+    "url": os.environ["MEILISEARCH_URL"],  # Your MeiliSearch host
+    "api_key": os.environ["MEILISEARCH_API_KEY"],  # Your MeiliSearch master key
     # "timeout": 1,  # Timeout for MeiliSearch requests (optional)
 }

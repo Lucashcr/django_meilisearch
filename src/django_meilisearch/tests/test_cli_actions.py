@@ -2,8 +2,6 @@
 Test cases for the CLI actions.
 """
 
-import json
-
 from django.test import TestCase
 from meilisearch.errors import MeilisearchApiError
 
