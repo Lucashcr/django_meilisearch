@@ -51,7 +51,7 @@ class Command(BaseCommand):
     def acreate(self, index_name: str, index_cls: type) -> None:
         """
         Asynchronous method to create an index.
-        
+
         Args:
             index_name (str): Index name.
             index_cls (type): Index class
@@ -67,7 +67,7 @@ class Command(BaseCommand):
     def create(self, index_name: str, index_cls: type) -> None:
         """
         Synchronous method to create an index.
-        
+
         Args:
             index_name (str): Index name.
             index_cls (type): Index class
@@ -89,7 +89,7 @@ class Command(BaseCommand):
     def apopulate(self, index_name: str, index_cls: type) -> None:
         """
         Asynchronous method to populate an index.
-        
+
         Args:
             index_name (str): Index name.
             index_cls (type): Index class
@@ -107,7 +107,7 @@ class Command(BaseCommand):
     def populate(self, index_name: str, index_cls: type) -> None:
         """
         Synchronous method to populate an index.
-        
+
         Args:
             index_name (str): Index name.
             index_cls (type): Index class
@@ -164,7 +164,7 @@ class Command(BaseCommand):
     def aclear(self, index_name: str, index_cls: type) -> None:
         """
         Asynchronous method to clear an index.
-        
+
         Args:
             index_name (str): Index name.
             index_cls (type): Index class
@@ -180,7 +180,7 @@ class Command(BaseCommand):
     def clear(self, index_name: str, index_cls: type) -> None:
         """
         Synchronous method to clear an index.
-        
+
         Args:
             index_name (str): Index name.
             index_cls (type): Index class
@@ -205,7 +205,7 @@ class Command(BaseCommand):
     def arebuild(self, index_name: str, index_cls: type) -> None:
         """
         Asynchronous method to rebuild an index.
-        
+
         Args:
             index_name (str): Index name.
             index_cls (type): Index class
@@ -225,7 +225,7 @@ class Command(BaseCommand):
     def rebuild(self, index_name: str, index_cls: type) -> None:
         """
         Synchronous method to rebuild an index.
-        
+
         Args:
             index_name (str): Index name.
             index_cls (type): Index class

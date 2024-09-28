@@ -41,7 +41,7 @@ class BaseIndexMetaclass(type):
     INDEX_NAMES: dict[str, str] = {}
 
     @staticmethod
-    def post_save_handler(_, instance, **kwargs):
+    def post_save_handler(sender, instance, **kwargs):
         """
         The post_save signal handler that adds the document to the index.
         """
@@ -50,7 +50,7 @@ class BaseIndexMetaclass(type):
                 index.add_single_document(instance)
 
     @staticmethod
-    def post_delete_handler(_, instance, **kwargs):
+    def post_delete_handler(sender, instance, **kwargs):
         """
         The post_delete signal handler that removes the document from the index.
         """

@@ -18,13 +18,7 @@ class TestInitialize(TestCase):
     Test cases for the CLI actions.
     """
 
-    def setUp(self):
-        """
-        Setup the test environment for the CLI action test cases.
-        """
-        with open("src/api/tests/data/posts.json", "r", encoding="utf-8") as file:
-            data = json.load(file)
-            Post.objects.bulk_create([Post(**post) for post in data])
+    fixtures = ["posts.json"]
 
     def test_success_config(self):
         """
