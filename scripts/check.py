@@ -26,10 +26,9 @@ def run():
         return False
 
     print("\n=================== GENERATING COVERAGE REPORT... ==================")
-    code = runner.run("coverage", ["html"])
+    code = runner.run("cov", [])
     if code != 0:
         print("\nERROR: COVERAGE REPORT GENERATION FAILED!")
         return False
 
     print("\nOK!")
-    return True

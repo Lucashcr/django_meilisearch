@@ -40,6 +40,7 @@ class BaseIndexMetaclass(type):
     REGISTERED_INDEXES: dict[str, Type] = {}
     INDEX_NAMES: dict[str, str] = {}
 
+    # pylint: disable=unused-argument
     @staticmethod
     def post_save_handler(sender, instance, **kwargs):
         """
@@ -49,6 +50,7 @@ class BaseIndexMetaclass(type):
             if isinstance(instance, index.model):
                 index.add_single_document(instance)
 
+    # pylint: disable=unused-argument
     @staticmethod
     def post_delete_handler(sender, instance, **kwargs):
         """
