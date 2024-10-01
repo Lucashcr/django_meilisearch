@@ -19,12 +19,6 @@ def run():
         print("\nERROR: CODE LINTING FAILED!")
         return False
 
-    print("\n========================= RUNNING TESTS... =========================")
-    code = runner.run("test", ["src"])
-    if code != 0:
-        print("\nERROR: TESTS FAILED!")
-        return False
-
     print("\n=================== GENERATING COVERAGE REPORT... ==================")
     code = runner.run("cov", [])
     if code != 0:

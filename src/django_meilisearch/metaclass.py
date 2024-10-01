@@ -86,14 +86,15 @@ class BaseIndexMetaclass(type):
             if not issubclass(model, Model):
                 raise InvalidDjangoModelError(f"{name}.model must be a Django Model")
 
-            mcs.primary_key_field = getattr(
-                namespace, "primary_key_field", model._meta.pk.name
+            mcs.primary_key_field = namespace.get(
+                "primary_key_field", model._meta.pk.name
             )
 
             if not isinstance(mcs.primary_key_field, str):
                 raise InvalidPrimaryKeyError(
                     f"{name}.Django.primary_key_field must be a string"
                 )
+
             if not hasattr(model, mcs.primary_key_field):
                 raise InvalidPrimaryKeyError(
                     f"{model.__name__} does not have a"

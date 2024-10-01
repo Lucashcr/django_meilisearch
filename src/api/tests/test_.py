@@ -2,13 +2,13 @@
 Test cases for the MeiliSearch client
 """
 
-from django.test import TransactionTestCase
+from django.test import TestCase
 
 from api.models import Post
 
 
 # Create your tests here.
-class TestMeiliSearch(TransactionTestCase):
+class TestMeiliSearch(TestCase):
     """
     Test cases for the MeiliSearch client
     """
