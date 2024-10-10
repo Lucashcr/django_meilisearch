@@ -156,10 +156,12 @@ class BaseIndexMetaclass(type):
         The delete method of the metaclass that removes the signal handlers.
         """
 
-        signals.post_save.disconnect(BaseIndexMetaclass.post_save_handler, sender=cls.model)
+        signals.post_save.disconnect(
+            BaseIndexMetaclass.post_save_handler, sender=cls.model
+        )
         signals.post_delete.disconnect(
             BaseIndexMetaclass.post_delete_handler, sender=cls.model
         )
-        
+
         if cls.name in BaseIndexMetaclass.INDEX_NAMES:
             del BaseIndexMetaclass.INDEX_NAMES[cls.name]

@@ -35,6 +35,8 @@ class TestInitialize(TestCase):
         self.assertEqual(index.get_primary_key(), "id")
         self.assertEqual(index.uid, PostIndex.name)
 
+        PostIndex.destroy()
+
     def test_populate_index(self):
         """
         Test the population of the index.
@@ -47,6 +49,8 @@ class TestInitialize(TestCase):
         self.assertEqual(index.get_primary_key(), "id")
         self.assertEqual(index.uid, PostIndex.name)
         self.assertEqual(count, Post.objects.count())
+
+        PostIndex.destroy()
 
     def test_clean_index(self):
         """
@@ -61,6 +65,8 @@ class TestInitialize(TestCase):
 
         self.assertEqual(pre_count, Post.objects.count())
         self.assertEqual(post_count, 0)
+
+        PostIndex.destroy()
 
     def test_destroy_index(self):
         """
