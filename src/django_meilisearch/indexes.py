@@ -4,11 +4,12 @@ populating, rebuilding, deleting, cleaning and searching an index in MeiliSearch
 """
 
 from http import HTTPStatus
-from typing import Type
+from typing import Iterable, Optional, Type
 from typing_extensions import Unpack
 
 from alive_progress import alive_bar
 from django.db.models import Model
+from djantic import ModelSchema
 from meilisearch.errors import MeilisearchApiError
 from meilisearch.models.task import Task
 
@@ -36,6 +37,13 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
 
     name: str
     model: Type[Model]
+
+    primary_key_field: Optional[str] = None
+    searchable_fields: Optional[Iterable[str]] = None
+    filterable_fields: Optional[Iterable[str]] = None
+    sortable_fields: Optional[Iterable[str]] = None
+
+    schema: Type[ModelSchema]
 
     @classmethod
     def __await_task_completion(cls, task_uid: int) -> Task:

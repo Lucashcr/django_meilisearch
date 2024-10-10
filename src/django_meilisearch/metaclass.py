@@ -46,9 +46,9 @@ class BaseIndexMetaclass(type):
         """
         The post_save signal handler that adds the document to the index.
         """
-        for _, index in BaseIndexMetaclass.REGISTERED_INDEXES.items():
+        for index in BaseIndexMetaclass.REGISTERED_INDEXES.values():
             if isinstance(instance, index.model):
-                index.add_single_document(instance)
+                index.aadd_single_document(instance)
 
     # pylint: disable=unused-argument
     @staticmethod
@@ -56,9 +56,9 @@ class BaseIndexMetaclass(type):
         """
         The post_delete signal handler that removes the document from the index.
         """
-        for _, index in BaseIndexMetaclass.REGISTERED_INDEXES.items():
+        for index in BaseIndexMetaclass.REGISTERED_INDEXES.values():
             if isinstance(instance, index.model):
-                index.remove_single_document(instance)
+                index.aremove_single_document(instance)
 
     def __new__(mcs, name: str, bases: tuple, namespace: dict):
         """
@@ -75,30 +75,28 @@ class BaseIndexMetaclass(type):
 
             model = namespace["model"]
 
-            model_field_names = [field.name for field in model._meta.fields]
-            searchable_fields = namespace.get("searchable_fields", model_field_names)
-            filterable_fields = namespace.get("filterable_fields", model_field_names)
-            sortable_fields = namespace.get("sortable_fields", model_field_names)
-
             if not isinstance(namespace["name"], str):
                 raise InvalidIndexNameError(f"{name}.name must be a string")
 
             if not issubclass(model, Model):
                 raise InvalidDjangoModelError(f"{name}.model must be a Django Model")
 
-            mcs.primary_key_field = namespace.get(
-                "primary_key_field", model._meta.pk.name
-            )
+            model_field_names = [field.name for field in model._meta.fields]
+            searchable_fields = namespace.get("searchable_fields", model_field_names)
+            filterable_fields = namespace.get("filterable_fields", model_field_names)
+            sortable_fields = namespace.get("sortable_fields", model_field_names)
 
-            if not isinstance(mcs.primary_key_field, str):
+            primary_key_field = namespace.get("primary_key_field", model._meta.pk.name)
+
+            if not isinstance(primary_key_field, str):
                 raise InvalidPrimaryKeyError(
                     f"{name}.Django.primary_key_field must be a string"
                 )
 
-            if not hasattr(model, mcs.primary_key_field):
+            if not hasattr(model, primary_key_field):
                 raise InvalidPrimaryKeyError(
                     f"{model.__name__} does not have a"
-                    f"primary_key_field named {mcs.primary_key_field}"
+                    f"primary_key_field named {primary_key_field}"
                 )
 
             validate_searchable_fields(name, searchable_fields, model_field_names)
@@ -126,11 +124,14 @@ class BaseIndexMetaclass(type):
             signals.post_save.connect(mcs.post_save_handler, sender=model)
             signals.post_delete.connect(mcs.post_delete_handler, sender=model)
 
-            mcs.searchable_fields = searchable_fields
-            mcs.filterable_fields = filterable_fields
-            mcs.sortable_fields = sortable_fields
+            cls = super().__new__(mcs, name, bases, namespace)
 
-            mcs.schema: ModelSchema = type(
+            cls.primary_key_field = primary_key_field
+            cls.searchable_fields = searchable_fields
+            cls.filterable_fields = filterable_fields
+            cls.sortable_fields = sortable_fields
+
+            cls.schema = type(
                 f"{name}Schema",
                 (ModelSchema,),
                 {
@@ -143,10 +144,8 @@ class BaseIndexMetaclass(type):
             index_label = (
                 f"{namespace['model']._meta.app_label}.{namespace['__qualname__']}"
             )
-            mcs.REGISTERED_INDEXES[index_label] = super().__new__(
-                mcs, name, bases, namespace
-            )
+            mcs.REGISTERED_INDEXES[index_label] = cls
             mcs.INDEX_NAMES[namespace["name"]] = index_label
-            return mcs.REGISTERED_INDEXES[index_label]
+            return cls
 
         return super().__new__(mcs, name, bases, namespace)
