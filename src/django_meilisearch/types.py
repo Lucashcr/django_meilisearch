@@ -18,9 +18,10 @@ class OptParams(TypedDict):
     filter: str | list
     facets: list[str]
     attributes_to_retrieve: list[str]
-    attributes_to_highlight: list[str]
+    attributes_to_crop: list[str]
     crop_length: int
     crop_marker: str
+    attributes_to_highlight: list[str]
     highlight_pre_tag: str
     highlight_post_tag: str
     show_matches_position: bool
@@ -30,6 +31,3 @@ class OptParams(TypedDict):
     show_ranking_score_details: bool
     ranking_score_threshold: float
     attributes_to_search_on: list[str]
-    hybrid: dict
-    vector: list[float]
-    retrieve_vectors: bool
