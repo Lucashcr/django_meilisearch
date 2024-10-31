@@ -9,9 +9,8 @@ readme = "README.md"
 python = "^3.10"
 django = "^4"
 meilisearch = "^0.31.4"
-pydantic = "^2.8.2"
-djantic2 = "^1.0.4"
 alive-progress = "^3.1.5"
+djangorestframework = "^3.15.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0"

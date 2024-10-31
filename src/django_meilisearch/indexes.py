@@ -9,9 +9,9 @@ from typing_extensions import Unpack
 
 from alive_progress import alive_bar
 from django.db.models import Model
-from djantic import ModelSchema
 from meilisearch.errors import MeilisearchApiError
 from meilisearch.models.task import Task
+from rest_framework.serializers import Serializer
 
 from django_meilisearch import client
 from django_meilisearch.types import OptParams
@@ -43,7 +43,7 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
     filterable_fields: Optional[Iterable[str]] = None
     sortable_fields: Optional[Iterable[str]] = None
 
-    schema: Type[ModelSchema]
+    serializer: Type[Serializer]
 
     @classmethod
     def __await_task_completion(cls, task_uid: int) -> Task:
@@ -104,10 +104,7 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
         for i in range(0, db_count, 1000):
             batch = cls.model.objects.all()[i : i + 1000]
             task_info = index.add_documents(
-                [
-                    s.model_dump(mode="json")
-                    for s in cls.schema.from_django(batch, many=True)
-                ],
+                cls.serializer(batch, many=True).data,
                 cls.primary_key_field,
             )
             task = client.get_task(task_info.task_uid)
@@ -137,10 +134,7 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
             for i in range(0, db_count, 1000):
                 batch = cls.model.objects.all()[i : i + 1000]
                 task_info = index.add_documents(
-                    [
-                        s.model_dump(mode="json")
-                        for s in cls.schema.from_django(batch, many=True)
-                    ],
+                    cls.serializer(batch, many=True).data,
                     cls.primary_key_field,
                 )
                 task = cls.__await_task_completion(task_info.task_uid)
@@ -257,7 +251,7 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
 
         index = client.index(cls.name)
         task_info = index.add_documents(
-            [cls.schema.from_django(instance).model_dump(mode="json")],
+            [cls.serializer(instance).data],
             cls.primary_key_field,
         )
         return client.get_task(task_info.task_uid)

@@ -7,10 +7,7 @@ The Document class is used to define the structure of the index that will be cre
 from typing import Type
 from weakref import WeakValueDictionary
 
-from django.db.models import Model, signals
-from djantic import ModelSchema
-from pydantic import ConfigDict
-
+from django.db.models import Model, signals, DateTimeField
 from django_meilisearch.exceptions import (
     InvalidDjangoModelError,
     InvalidFilterableFieldError,
@@ -26,6 +23,9 @@ from django_meilisearch.validators import (
     validate_searchable_fields,
     validate_sortable_fields,
 )
+from rest_framework.serializers import ModelSerializer
+
+from django_meilisearch.serializers import TimestampField
 
 
 class BaseIndexMetaclass(type):
@@ -131,14 +131,28 @@ class BaseIndexMetaclass(type):
             cls.searchable_fields = searchable_fields
             cls.filterable_fields = filterable_fields
             cls.sortable_fields = sortable_fields
-
-            cls.schema = type(
-                f"{name}Schema",
-                (ModelSchema,),
+            
+            Meta = type(
+                "Meta",
+                (),
                 {
-                    "model_config": ConfigDict(
-                        model=model,  # type: ignore
-                    )
+                    "model": model,
+                    "fields": model_field_names
+                }
+            )
+            
+            datetime_fields = {}
+            for field_name in model_field_names:
+                field_class = getattr(model, field_name)
+                if isinstance(field_class.field, DateTimeField):
+                    datetime_fields[field_name] = TimestampField()
+
+            cls.serializer = type(
+                f"{name}Serializer",
+                (ModelSerializer,),
+                {
+                    "Meta": Meta,
+                    **datetime_fields
                 },
             )
 
