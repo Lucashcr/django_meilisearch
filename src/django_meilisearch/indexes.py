@@ -178,7 +178,7 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
             to Django model instances. Defaults to False.
 
         Returns:
-            tuple[dict, HTTPStatus]: Tuple containing search results and the http status code.
+            dict: Search results.
         """
 
         if not opt_params.get("attributes_to_search_on"):
@@ -201,15 +201,9 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
             results = index.search(term, opt_params=opt_params)
 
         except MeilisearchApiError as e:
-            results = {**e.__dict__}
-            status_code = (
-                e.status_code if e.status_code else HTTPStatus.INTERNAL_SERVER_ERROR
-            )
+            results = {"hits": [], **e.__dict__}
 
-        else:
-            status_code = HTTPStatus.OK if results.get("hits") else HTTPStatus.NOT_FOUND
-
-        return results, status_code
+        return results
 
     @classmethod
     def adestroy(cls) -> Task:

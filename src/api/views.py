@@ -17,7 +17,7 @@ def test_search(request: HttpRequest) -> JsonResponse:
     Returns:
         response (django.http.JsonResponse): HTTP response object.
     """
-    response, status_code = PostIndex.search(
+    response = PostIndex.search(
         request.GET.get("q"),
         # to_queryset=True,
         # attributes_to_retrieve=["title", "content"],
@@ -25,4 +25,4 @@ def test_search(request: HttpRequest) -> JsonResponse:
         sort=["created_at:desc"],
     )
 
-    return JsonResponse(response, status=status_code)
+    return JsonResponse(response)
