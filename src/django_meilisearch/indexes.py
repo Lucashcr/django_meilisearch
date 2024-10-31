@@ -168,7 +168,7 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
 
     @classmethod
     def search(
-        cls, term: str, to_queryset: bool = False, **opt_params: Unpack[OptParams]
+        cls, term: str, **opt_params: Unpack[OptParams]
     ) -> tuple[dict, HTTPStatus]:
         """Do a search on the index.
 
@@ -199,11 +199,6 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
         try:
             index = client.get_index(cls.name)
             results = index.search(term, opt_params=opt_params)
-
-            if to_queryset:
-                results["hits"] = cls.model.objects.filter(
-                    pk__in=[hit[cls.primary_key_field] for hit in results["hits"]]
-                )
 
         except MeilisearchApiError as e:
             results = {**e.__dict__}
