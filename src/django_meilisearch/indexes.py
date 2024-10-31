@@ -8,6 +8,7 @@ from typing import Iterable, Optional, Type
 from typing_extensions import Unpack
 
 from alive_progress import alive_bar
+from camel_converter import dict_to_camel
 from django.db.models import Model
 from meilisearch.errors import MeilisearchApiError
 from meilisearch.models.task import Task
@@ -15,7 +16,6 @@ from rest_framework.serializers import Serializer
 
 from django_meilisearch import client
 from django_meilisearch.types import OptParams
-from django_meilisearch.utils import convert_to_camel_case
 from django_meilisearch.metaclass import BaseIndexMetaclass
 
 
@@ -190,11 +190,7 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
         ):
             opt_params["attributes_to_retrieve"] += [cls.primary_key_field]
 
-        for key in list(opt_params.keys()):
-            camel_key = convert_to_camel_case(key)
-            if camel_key != key:
-                opt_params[camel_key] = opt_params[key]  # type: ignore
-                del opt_params[key]  # type: ignore
+        opt_params = dict_to_camel(opt_params)
 
         try:
             index = client.get_index(cls.name)

@@ -23,20 +23,3 @@ def exists_field_in_namespace(field: str, namespace: dict) -> bool:
         )
 
     return True
-
-
-def convert_to_camel_case(string: str) -> str:
-    """
-    Convert a snake_case string to a camelCase string.
-
-    Args:
-        string (str): The snake_cased string to convert to camelCase
-
-    Returns:
-        str: The camelCased string
-    """
-    if "_" not in string:
-        return string.lower()
-
-    splitted = string.split("_")
-    return splitted[0] + "".join(word.capitalize() for word in splitted[1:])

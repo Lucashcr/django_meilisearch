@@ -11,6 +11,7 @@ django = "^4"
 meilisearch = "^0.31.4"
 alive-progress = "^3.1.5"
 djangorestframework = "^3.15.2"
+camel-converter = "^4.0.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0"
@@ -29,7 +30,7 @@ format = "black src"
 lint = "pylint src"
 check = "mypy src"
 test = "pytest -v"
-cov = "coverage run -m pytest && coverage report"
+cov = "coverage run -m pytest && coverage html"
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "mysite.settings"
