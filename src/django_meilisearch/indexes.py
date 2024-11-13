@@ -186,13 +186,6 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
         if not opt_params.get("attributes_to_search_on"):
             opt_params["attributes_to_search_on"] = cls.searchable_fields
 
-        if (
-            "attributes_to_retrieve" in opt_params
-            and cls.primary_key_field
-            not in opt_params["attributes_to_retrieve"]
-        ):
-            opt_params["attributes_to_retrieve"] += [cls.primary_key_field]
-
         opt_params = dict_to_camel(opt_params)
 
         try:

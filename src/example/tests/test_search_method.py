@@ -145,18 +145,18 @@ class TestInitialize(TestCase):
         """
         Test the success of the search with attributes to retrieve option.
         """
-        results = PostIndex.search(
-            "itaque", attributes_to_retrieve=["id", "title"]
-        )
+        results = PostIndex.search("itaque", attributes_to_retrieve=["title"])
 
         self.assertEqual(len(results["hits"]), 7)
         self.assertEqual(results["estimatedTotalHits"], 7)
         self.assertTrue(
-            all("id" in hit and "title" in hit for hit in results["hits"])
+            all("title" in hit and len(hit) == 1 for hit in results["hits"])
         )
         self.assertTrue(
             all(
-                "content" not in hit and "create_at" not in hit
+                "content" not in hit
+                and "create_at" not in hit
+                and "id" not in hit
                 for hit in results["hits"]
             )
         )
