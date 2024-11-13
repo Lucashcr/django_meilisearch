@@ -7,6 +7,7 @@ from django.test import TestCase
 
 from api.models import Post
 from api.indexes import PostIndex
+from django_meilisearch.indexes import BaseIndex
 
 
 class TestMeilisearchSignals(TestCase):
@@ -23,9 +24,14 @@ class TestMeilisearchSignals(TestCase):
         Set up the test data.
         """
         PostIndex.create()
+    
+    def setUp(self):
+        """
+        Set up the test cases.
+        """
         PostIndex.clean()
 
-    def test_add_single_document(self):
+    def test_add_single_document_signal(self):
         """
         Test the addition of a single document.
         """
@@ -36,7 +42,7 @@ class TestMeilisearchSignals(TestCase):
 
         self.assertEqual(count_after, count_before + 1)
 
-    def test_remove_single_document(self):
+    def test_remove_single_document_signal(self):
         """
         Test the removal of a single document.
         """

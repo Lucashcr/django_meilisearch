@@ -6,7 +6,9 @@ from django.db.models import Model, fields
 from django.test import TestCase
 
 from django_meilisearch.exceptions import (
+    InvalidDjangoModelError,
     InvalidFilterableFieldError,
+    InvalidIndexNameError,
     InvalidPrimaryKeyError,
     InvalidSearchableFieldError,
     InvalidSortableFieldError,
@@ -77,6 +79,20 @@ class TestInitialize(TestCase):
 
                 model = self.model
 
+    def test_failed_instantiate_with_invalid_name(self):
+        """
+        Test the failure of the instance when the name is not informed.
+        """
+        with self.assertRaises(InvalidIndexNameError):
+            # pylint: disable=unused-variable
+            class TestIndexCls(BaseIndex):
+                """
+                Test index class.
+                """
+
+                name = 1
+                model = self.model
+
     def test_failed_instantiate_not_informed_model(self):
         """
         Test the failure of the instance when the model is not informed.
@@ -89,6 +105,22 @@ class TestInitialize(TestCase):
                 """
 
                 name = "test_index"
+
+    def test_failed_instantiate_with_invalid_model(self):
+        """
+        Test the failure of the instance when the model is not informed.
+        """
+        class FakeModel: ...
+        
+        with self.assertRaises(InvalidDjangoModelError):
+            # pylint: disable=unused-variable
+            class TestIndexCls(BaseIndex):
+                """
+                Test index class.
+                """
+
+                name = "test_index"
+                model = FakeModel
 
     def test_successful_instantiate_valid_primary_key(self):
         """
@@ -122,6 +154,21 @@ class TestInitialize(TestCase):
                 name = "test_index"
                 model = self.model
                 primary_key_field = "invalid"
+
+    def test_failed_instantiate_invalid_primary_key_type(self):
+        """
+        Test the failure of the instance when the primary key is invalid.
+        """
+        with self.assertRaises(InvalidPrimaryKeyError):
+            # pylint: disable=unused-variable
+            class TestIndexCls(BaseIndex):
+                """
+                Test index class.
+                """
+
+                name = "test_index"
+                model = self.model
+                primary_key_field = 1
 
     def test_successful_instantiate_searchable_fields(self):
         """
