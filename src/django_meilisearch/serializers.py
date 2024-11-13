@@ -14,7 +14,7 @@ class TimestampField(serializers.DateTimeField):
     Convert a django datetime to/from timestamp.
     """
 
-    def to_representation(self, value):
+    def to_representation(self, value: datetime) -> float:
         """
         Convert the field to its internal representation (aka timestamp)
         :param value: the DateTime value
@@ -22,7 +22,7 @@ class TimestampField(serializers.DateTimeField):
         """
         return value.timestamp()
 
-    def to_internal_value(self, value):
+    def to_internal_value(self, value: float) -> datetime:
         """
         deserialize a timestamp to a DateTime value
         :param value: the timestamp value
