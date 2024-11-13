@@ -4,7 +4,7 @@ Test cases for the CLI actions.
 
 from django.test import TestCase
 
-from api.indexes import PostIndex
+from example.indexes import PostIndex
 
 
 # Create your tests here.

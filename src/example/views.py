@@ -4,7 +4,7 @@ Views definition for the api app.
 
 from django.http import JsonResponse, HttpRequest
 
-from api.indexes import PostIndex
+from example.indexes import PostIndex
 
 
 # Create your views here.

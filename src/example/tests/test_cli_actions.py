@@ -5,8 +5,8 @@ Test cases for the CLI actions.
 from django.test import TestCase
 from meilisearch.errors import MeilisearchApiError
 
-from api.indexes import PostIndex
-from api.models import Post
+from example.indexes import PostIndex
+from example.models import Post
 from django_meilisearch import client
 
 

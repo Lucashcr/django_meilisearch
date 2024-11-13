@@ -4,7 +4,7 @@ This module contains the indexes definition for the api app.
 
 from django_meilisearch.indexes import BaseIndex
 
-from api.models import Post
+from example.models import Post
 
 
 class PostIndex(BaseIndex):

@@ -5,9 +5,8 @@ Test cases for the Meilisearch signals.
 import time
 from django.test import TestCase
 
-from api.models import Post
-from api.indexes import PostIndex
-from django_meilisearch.indexes import BaseIndex
+from example.models import Post
+from example.indexes import PostIndex
 
 
 class TestMeilisearchSignals(TestCase):
@@ -19,7 +18,7 @@ class TestMeilisearchSignals(TestCase):
     """
 
     @classmethod
-    def setUpTestData(cls):
+    def setUpClass(cls):
         """
         Set up the test data.
         """
@@ -47,6 +46,7 @@ class TestMeilisearchSignals(TestCase):
         Test the removal of a single document.
         """
         post = Post.objects.create(title="Testing post", content="It's a testing post.")
+        time.sleep(1)
 
         count_before = PostIndex.count()
         post.delete()
