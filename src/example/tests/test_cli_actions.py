@@ -2,6 +2,8 @@
 Test cases for the CLI actions.
 """
 
+import time
+
 from django.test import TestCase
 from meilisearch.errors import MeilisearchApiError
 
@@ -49,6 +51,24 @@ class TestInitialize(TestCase):
         self.assertEqual(index.get_primary_key(), "id")
         self.assertEqual(index.uid, PostIndex.name)
         self.assertEqual(count, Post.objects.count())
+
+        PostIndex.destroy()
+
+    def test_apopulate_index(self):
+        """
+        Test the population of the index.
+        """
+        PostIndex.create()
+        tasks = PostIndex.apopulate()
+        self.assertEqual(len(tasks), 1)
+        self.assertTrue(all(task.status == "enqueued" for task in tasks))
+
+        time.sleep(1)
+
+        index = client.get_index(PostIndex.name)
+        self.assertEqual(index.get_primary_key(), "id")
+        self.assertEqual(index.uid, PostIndex.name)
+        self.assertEqual(PostIndex.count(), Post.objects.count())
 
         PostIndex.destroy()
 
