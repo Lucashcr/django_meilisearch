@@ -1,3 +1,8 @@
+"""
+This module define rest_framework serializers features
+that handle to serialize models to populate index.
+"""
+
 from datetime import datetime
 
 from django.utils.timezone import get_current_timezone
@@ -8,6 +13,7 @@ class TimestampField(serializers.DateTimeField):
     """
     Convert a django datetime to/from timestamp.
     """
+
     def to_representation(self, value):
         """
         Convert the field to its internal representation (aka timestamp)

@@ -7,7 +7,7 @@ from django.test import TestCase
 from example.indexes import PostIndex
 
 
-# Create your tests here.
+# pylint: disable=too-many-public-methods
 class TestInitialize(TestCase):
     """
     Test cases for the CLI actions.
@@ -84,7 +84,9 @@ class TestInitialize(TestCase):
         """
         Test the success of the search with string filter option.
         """
-        results = PostIndex.search("itaque", filter="id > 34 AND id < 37 OR id = 48")
+        results = PostIndex.search(
+            "itaque", filter="id > 34 AND id < 37 OR id = 48"
+        )
 
         self.assertEqual(len(results["hits"]), 2)
         self.assertEqual(results["estimatedTotalHits"], 2)
@@ -117,7 +119,17 @@ class TestInitialize(TestCase):
         self.assertEqual(results["estimatedTotalHits"], 7)
         self.assertEqual(
             results["facetDistribution"],
-            {"id": {"12": 1, "18": 1, "21": 1, "34": 1, "36": 1, "44": 1, "48": 1}},
+            {
+                "id": {
+                    "12": 1,
+                    "18": 1,
+                    "21": 1,
+                    "34": 1,
+                    "36": 1,
+                    "44": 1,
+                    "48": 1,
+                }
+            },
         )
         self.assertEqual(
             results["facetStats"],
@@ -133,11 +145,15 @@ class TestInitialize(TestCase):
         """
         Test the success of the search with attributes to retrieve option.
         """
-        results = PostIndex.search("itaque", attributes_to_retrieve=["id", "title"])
+        results = PostIndex.search(
+            "itaque", attributes_to_retrieve=["id", "title"]
+        )
 
         self.assertEqual(len(results["hits"]), 7)
         self.assertEqual(results["estimatedTotalHits"], 7)
-        self.assertTrue(all("id" in hit and "title" in hit for hit in results["hits"]))
+        self.assertTrue(
+            all("id" in hit and "title" in hit for hit in results["hits"])
+        )
         self.assertTrue(
             all(
                 "content" not in hit and "create_at" not in hit
@@ -168,10 +184,6 @@ class TestInitialize(TestCase):
             "itaque", attributes_to_crop=["content"], crop_length=5
         )
 
-        import json
-
-        print(json.dumps(results, indent=4))
-
         self.assertEqual(len(results["hits"]), 7)
         self.assertEqual(results["estimatedTotalHits"], 7)
         self.assertTrue(
@@ -192,10 +204,16 @@ class TestInitialize(TestCase):
         self.assertEqual(len(results["hits"]), 7)
         self.assertEqual(results["estimatedTotalHits"], 7)
         self.assertTrue(
-            any("..." in hit["_formatted"]["content"] for hit in results["hits"])
+            any(
+                "..." in hit["_formatted"]["content"]
+                for hit in results["hits"]
+            )
         )
         self.assertTrue(
-            all("\u2026" not in hit["_formatted"]["content"] for hit in results["hits"])
+            all(
+                "\u2026" not in hit["_formatted"]["content"]
+                for hit in results["hits"]
+            )
         )
 
     def test_successful_search_with_attributes_to_search_on(self):
@@ -206,7 +224,9 @@ class TestInitialize(TestCase):
 
         self.assertEqual(len(results["hits"]), 3)
         self.assertEqual(results["estimatedTotalHits"], 3)
-        self.assertTrue(all("itaque" in hit["title"] for hit in results["hits"]))
+        self.assertTrue(
+            all("itaque" in hit["title"] for hit in results["hits"])
+        )
 
     def test_successful_search_with_attributes_to_highlight(self):
         """
@@ -217,10 +237,15 @@ class TestInitialize(TestCase):
         self.assertEqual(len(results["hits"]), 7)
         self.assertEqual(results["estimatedTotalHits"], 7)
         self.assertTrue(
-            any("<em>" in hit["_formatted"]["title"] for hit in results["hits"])
+            any(
+                "<em>" in hit["_formatted"]["title"] for hit in results["hits"]
+            )
         )
         self.assertTrue(
-            all("<em>" not in hit["_formatted"]["content"] for hit in results["hits"])
+            all(
+                "<em>" not in hit["_formatted"]["content"]
+                for hit in results["hits"]
+            )
         )
 
     def test_successful_search_with_highlight_pre_tag(self):
@@ -228,16 +253,24 @@ class TestInitialize(TestCase):
         Test the success of the search with highlight pre tag option.
         """
         results = PostIndex.search(
-            "itaque", attributes_to_highlight=["content"], highlight_pre_tag="<strong>"
+            "itaque",
+            attributes_to_highlight=["content"],
+            highlight_pre_tag="<strong>",
         )
 
         self.assertEqual(len(results["hits"]), 7)
         self.assertEqual(results["estimatedTotalHits"], 7)
         self.assertTrue(
-            any("<strong>" in hit["_formatted"]["content"] for hit in results["hits"])
+            any(
+                "<strong>" in hit["_formatted"]["content"]
+                for hit in results["hits"]
+            )
         )
         self.assertTrue(
-            all("<strong>" not in hit["_formatted"]["title"] for hit in results["hits"])
+            all(
+                "<strong>" not in hit["_formatted"]["title"]
+                for hit in results["hits"]
+            )
         )
 
     def test_successful_search_with_highlight_post_tag(self):
@@ -253,11 +286,15 @@ class TestInitialize(TestCase):
         self.assertEqual(len(results["hits"]), 7)
         self.assertEqual(results["estimatedTotalHits"], 7)
         self.assertTrue(
-            any("</strong>" in hit["_formatted"]["content"] for hit in results["hits"])
+            any(
+                "</strong>" in hit["_formatted"]["content"]
+                for hit in results["hits"]
+            )
         )
         self.assertTrue(
             all(
-                "</strong>" not in hit["_formatted"]["title"] for hit in results["hits"]
+                "</strong>" not in hit["_formatted"]["title"]
+                for hit in results["hits"]
             )
         )
 
@@ -269,17 +306,15 @@ class TestInitialize(TestCase):
 
         self.assertEqual(len(results["hits"]), 7)
         self.assertEqual(results["estimatedTotalHits"], 7)
-        self.assertTrue(all("_matchesPosition" in hit for hit in results["hits"]))
+        self.assertTrue(
+            all("_matchesPosition" in hit for hit in results["hits"])
+        )
 
     def test_successful_search_with_sorted_asc(self):
         """
         Test the success of the search with sort option.
         """
         results = PostIndex.search("", sort=["created_at:asc"])
-
-        import json
-
-        print(json.dumps(results, indent=4))
 
         self.assertEqual(len(results["hits"]), 20)
         self.assertEqual(results["estimatedTotalHits"], 50)
@@ -297,7 +332,9 @@ class TestInitialize(TestCase):
         self.assertEqual(results["estimatedTotalHits"], 50)
 
         created_at_list = [hit["created_at"] for hit in results["hits"]]
-        self.assertEqual(created_at_list, sorted(created_at_list, reverse=True))
+        self.assertEqual(
+            created_at_list, sorted(created_at_list, reverse=True)
+        )
 
     def test_success_search_with_last_matching_strategy(self):
         """
@@ -309,7 +346,9 @@ class TestInitialize(TestCase):
         self.assertEqual(results["estimatedTotalHits"], 14)
 
         id_list = [hit["id"] for hit in results["hits"]]
-        self.assertEqual(id_list, [18, 44, 34, 21, 22, 30, 2, 45, 29, 5, 8, 7, 9, 41])
+        self.assertEqual(
+            id_list, [18, 44, 34, 21, 22, 30, 2, 45, 29, 5, 8, 7, 9, 41]
+        )
 
     def test_success_search_with_all_matching_strategy(self):
         """
@@ -327,14 +366,16 @@ class TestInitialize(TestCase):
         """
         Test the success of the search with matching strategy option.
         """
-        results = PostIndex.search("dolor itaque", matching_strategy="frequency")
+        results = PostIndex.search(
+            "dolor itaque", matching_strategy="frequency"
+        )
 
         self.assertEqual(len(results["hits"]), 7)
         self.assertEqual(results["estimatedTotalHits"], 7)
 
         id_list = [hit["id"] for hit in results["hits"]]
         self.assertEqual(sorted(id_list), [12, 18, 21, 34, 36, 44, 48])
-    
+
     def test_success_search_with_no_ranking_score(self):
         """
         Test the success of the search with show ranking score option.
@@ -343,8 +384,10 @@ class TestInitialize(TestCase):
 
         self.assertEqual(len(results["hits"]), 7)
         self.assertEqual(results["estimatedTotalHits"], 7)
-        self.assertTrue(all("_rankingScore" not in hit for hit in results["hits"]))
-    
+        self.assertTrue(
+            all("_rankingScore" not in hit for hit in results["hits"])
+        )
+
     def test_success_search_with_ranking_score(self):
         """
         Test the success of the search with show ranking score option.
@@ -354,7 +397,7 @@ class TestInitialize(TestCase):
         self.assertEqual(len(results["hits"]), 7)
         self.assertEqual(results["estimatedTotalHits"], 7)
         self.assertTrue(all("_rankingScore" in hit for hit in results["hits"]))
-    
+
     def test_success_search_with_no_ranking_score_details(self):
         """
         Test the success of the search with show ranking score details option.
@@ -363,8 +406,10 @@ class TestInitialize(TestCase):
 
         self.assertEqual(len(results["hits"]), 7)
         self.assertEqual(results["estimatedTotalHits"], 7)
-        self.assertTrue(all("_rankingScoreDetails" not in hit for hit in results["hits"]))
-    
+        self.assertTrue(
+            all("_rankingScoreDetails" not in hit for hit in results["hits"])
+        )
+
     def test_success_search_with_ranking_score_details(self):
         """
         Test the success of the search with show ranking score details option.
@@ -373,17 +418,25 @@ class TestInitialize(TestCase):
 
         self.assertEqual(len(results["hits"]), 7)
         self.assertEqual(results["estimatedTotalHits"], 7)
-        self.assertTrue(all("_rankingScoreDetails" in hit for hit in results["hits"]))
-    
+        self.assertTrue(
+            all("_rankingScoreDetails" in hit for hit in results["hits"])
+        )
+
     def test_success_search_with_ranking_score_threshold(self):
         """
         Test the success of the search with ranking score threshold option.
         """
-        results = PostIndex.search("itaque", ranking_score_threshold=0.75, show_ranking_score=True)
+        results = PostIndex.search(
+            "itaque",
+            ranking_score_threshold=0.75,
+            show_ranking_score=True,
+        )
 
         self.assertEqual(len(results["hits"]), 6)
         self.assertEqual(results["estimatedTotalHits"], 6)
-        self.assertTrue(all(hit["_rankingScore"] >= 0.75 for hit in results["hits"]))
-        
+        self.assertTrue(
+            all(hit["_rankingScore"] >= 0.75 for hit in results["hits"])
+        )
+
         id_list = [hit["id"] for hit in results["hits"]]
         self.assertEqual(sorted(id_list), [12, 18, 21, 34, 36, 48])

@@ -21,7 +21,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-hl)cj0%op2qjwr-7_935=jwfa%z!ptg8a4o0k^pcry$o-5&!g-"
+SECRET_KEY = (
+    "django-insecure-hl)cj0%op2qjwr-7_935=jwfa%z!ptg8a4o0k^pcry$o-5&!g-"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -127,6 +129,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 DJANGO_MEILISEARCH = {
     "url": os.environ["MEILISEARCH_URL"],  # Your MeiliSearch host
-    "api_key": os.environ["MEILISEARCH_API_KEY"],  # Your MeiliSearch master key
+    "api_key": os.environ[
+        "MEILISEARCH_API_KEY"
+    ],  # Your MeiliSearch master key
     # "timeout": 1,  # Timeout for MeiliSearch requests (optional)
 }

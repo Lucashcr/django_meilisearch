@@ -31,7 +31,7 @@ Run the Django development server
 - [x] Create a progress viewer while indexing data
 - [x] Config Mypy type checking and solve errors
 - [x] Config Black code format and apply it
-- [ ] Solve Pylint advices
+- [x] Solve Pylint advices
 - [ ] Review tests coverage
 - [ ] Implements GitHub Actions workflow
 - [ ] Implements views (explore indexed data) ???

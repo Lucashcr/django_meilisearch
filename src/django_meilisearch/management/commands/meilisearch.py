@@ -304,4 +304,6 @@ class Command(BaseCommand):
 
     def question(self, message):
         """Question message styling"""
-        self.stdout.write(self.style.WARNING(f"[WARNING]: {message}"), ending=" ")
+        self.stdout.write(
+            self.style.WARNING(f"[WARNING]: {message}"), ending=" "
+        )

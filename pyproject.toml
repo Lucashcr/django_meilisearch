@@ -37,6 +37,9 @@ DJANGO_SETTINGS_MODULE = "mysite.settings"
 python_files = ["test_*", "*_test", "tests/*"]
 pythonpath = ["src"]
 
+[tool.black]
+line-length = 79
+
 [tool.mypy]
 ignore_missing_imports = true
 

@@ -23,7 +23,7 @@ class TestMeilisearchSignals(TestCase):
         Set up the test data.
         """
         PostIndex.create()
-    
+
     def setUp(self):
         """
         Set up the test cases.
@@ -35,7 +35,9 @@ class TestMeilisearchSignals(TestCase):
         Test the addition of a single document.
         """
         count_before = PostIndex.count()
-        Post.objects.create(title="Testing post", content="It's a testing post.")
+        Post.objects.create(
+            title="Testing post", content="It's a testing post."
+        )
         time.sleep(1)
         count_after = PostIndex.count()
 
@@ -45,7 +47,9 @@ class TestMeilisearchSignals(TestCase):
         """
         Test the removal of a single document.
         """
-        post = Post.objects.create(title="Testing post", content="It's a testing post.")
+        post = Post.objects.create(
+            title="Testing post", content="It's a testing post."
+        )
         time.sleep(1)
 
         count_before = PostIndex.count()

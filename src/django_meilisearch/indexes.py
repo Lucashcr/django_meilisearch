@@ -69,7 +69,9 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
             Task: Meilisearch task object.
         """
 
-        task_info = client.create_index(cls.name, {"primaryKey": cls.primary_key_field})
+        task_info = client.create_index(
+            cls.name, {"primaryKey": cls.primary_key_field}
+        )
         return client.get_task(task_info.task_uid)
 
     @classmethod
@@ -186,7 +188,8 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
 
         if (
             "attributes_to_retrieve" in opt_params
-            and cls.primary_key_field not in opt_params["attributes_to_retrieve"]
+            and cls.primary_key_field
+            not in opt_params["attributes_to_retrieve"]
         ):
             opt_params["attributes_to_retrieve"] += [cls.primary_key_field]
 

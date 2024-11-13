@@ -110,8 +110,11 @@ class TestInitialize(TestCase):
         """
         Test the failure of the instance when the model is not informed.
         """
-        class FakeModel: ...
-        
+
+        # pylint: disable=too-few-public-methods
+        class FakeModel:
+            """Invalid model"""
+
         with self.assertRaises(InvalidDjangoModelError):
             # pylint: disable=unused-variable
             class TestIndexCls(BaseIndex):

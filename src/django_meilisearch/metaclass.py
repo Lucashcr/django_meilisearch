@@ -8,13 +8,12 @@ from typing import Type
 from weakref import WeakValueDictionary
 
 from django.db.models import Model, signals, DateTimeField
+from rest_framework.serializers import ModelSerializer
+
 from django_meilisearch.exceptions import (
     InvalidDjangoModelError,
-    InvalidFilterableFieldError,
     InvalidIndexNameError,
     InvalidPrimaryKeyError,
-    InvalidSearchableFieldError,
-    InvalidSortableFieldError,
     MissingRequiredFieldError,
 )
 from django_meilisearch.utils import exists_field_in_namespace
@@ -23,8 +22,6 @@ from django_meilisearch.validators import (
     validate_searchable_fields,
     validate_sortable_fields,
 )
-from rest_framework.serializers import ModelSerializer
-
 from django_meilisearch.serializers import TimestampField
 
 
@@ -61,6 +58,7 @@ class BaseIndexMetaclass(type):
             if isinstance(instance, index.model):
                 index.aremove_single_document(instance)
 
+    # pylint: disable=too-many-locals
     def __new__(mcs, name: str, bases: tuple, namespace: dict):
         """
         The new method of the metaclass that validates the fields of the class.
@@ -80,14 +78,24 @@ class BaseIndexMetaclass(type):
                 raise InvalidIndexNameError(f"{name}.name must be a string")
 
             if not issubclass(model, Model):
-                raise InvalidDjangoModelError(f"{name}.model must be a Django Model")
+                raise InvalidDjangoModelError(
+                    f"{name}.model must be a Django Model"
+                )
 
             model_field_names = [field.name for field in model._meta.fields]
-            searchable_fields = namespace.get("searchable_fields", model_field_names)
-            filterable_fields = namespace.get("filterable_fields", model_field_names)
-            sortable_fields = namespace.get("sortable_fields", model_field_names)
+            searchable_fields = namespace.get(
+                "searchable_fields", model_field_names
+            )
+            filterable_fields = namespace.get(
+                "filterable_fields", model_field_names
+            )
+            sortable_fields = namespace.get(
+                "sortable_fields", model_field_names
+            )
 
-            primary_key_field = namespace.get("primary_key_field", model._meta.pk.name)
+            primary_key_field = namespace.get(
+                "primary_key_field", model._meta.pk.name
+            )
 
             if not isinstance(primary_key_field, str):
                 raise InvalidPrimaryKeyError(
@@ -100,27 +108,15 @@ class BaseIndexMetaclass(type):
                     f"primary_key_field named {primary_key_field}"
                 )
 
-            validate_searchable_fields(name, searchable_fields, model_field_names)
-            validate_filterable_fields(name, filterable_fields, model_field_names)
-            validate_sortable_fields(name, sortable_fields, model_field_names)
-
-            for field in searchable_fields:
-                if not hasattr(model, field):
-                    raise InvalidSearchableFieldError(
-                        f"{model.__name__} does not have a searchable_field named {field}"
-                    )
-
-            for field in filterable_fields:
-                if not hasattr(model, field):
-                    raise InvalidFilterableFieldError(
-                        f"{model.__name__} does not have a filterable_field named {field}"
-                    )
-
-            for field in sortable_fields:
-                if not hasattr(model, field):
-                    raise InvalidSortableFieldError(
-                        f"{model.__name__} does not have a filterable_field named {field}"
-                    )
+            validate_searchable_fields(
+                name, searchable_fields, model_field_names, model
+            )
+            validate_filterable_fields(
+                name, filterable_fields, model_field_names, model
+            )
+            validate_sortable_fields(
+                name, sortable_fields, model_field_names, model
+            )
 
             signals.post_save.connect(mcs.post_save_handler, sender=model)
             signals.post_delete.connect(mcs.post_delete_handler, sender=model)
@@ -131,16 +127,13 @@ class BaseIndexMetaclass(type):
             cls.searchable_fields = searchable_fields
             cls.filterable_fields = filterable_fields
             cls.sortable_fields = sortable_fields
-            
+
             Meta = type(
                 "Meta",
                 (),
-                {
-                    "model": model,
-                    "fields": model_field_names
-                }
+                {"model": model, "fields": model_field_names},
             )
-            
+
             datetime_fields = {}
             for field_name in model_field_names:
                 field_class = getattr(model, field_name)
@@ -150,15 +143,10 @@ class BaseIndexMetaclass(type):
             cls.serializer = type(
                 f"{name}Serializer",
                 (ModelSerializer,),
-                {
-                    "Meta": Meta,
-                    **datetime_fields
-                },
+                {"Meta": Meta, **datetime_fields},
             )
 
-            index_label = (
-                f"{namespace['model']._meta.app_label}.{namespace['__qualname__']}"
-            )
+            index_label = f"{namespace['model']._meta.app_label}.{namespace['__qualname__']}"
             mcs.REGISTERED_INDEXES[index_label] = cls
             mcs.INDEX_NAMES[namespace["name"]] = index_label
             return cls
