@@ -14,7 +14,7 @@ def exists_field_in_namespace(field: str, namespace: dict) -> bool:
         bool: True if the field exists in the namespace, False otherwise
     """
     father, *children = field.split("__")
-    if father not in namespace or not namespace[father]:
+    if father not in namespace:
         return False
 
     if children:
