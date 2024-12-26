@@ -83,15 +83,18 @@ class BaseIndexMetaclass(type):
                 )
 
             model_field_names = [field.name for field in model._meta.fields]
-            searchable_fields = namespace.get(
-                "searchable_fields", model_field_names
-            )
-            filterable_fields = namespace.get(
-                "filterable_fields", model_field_names
-            )
-            sortable_fields = namespace.get(
-                "sortable_fields", model_field_names
-            )
+
+            searchable_fields = namespace.get("searchable_fields")
+            if not searchable_fields or searchable_fields == "__all__":
+                searchable_fields = model_field_names
+
+            filterable_fields = namespace.get("filterable_fields")
+            if not filterable_fields or filterable_fields == "__all__":
+                filterable_fields = model_field_names
+
+            sortable_fields = namespace.get("sortable_fields")
+            if not sortable_fields or sortable_fields == "__all__":
+                sortable_fields = model_field_names
 
             primary_key_field = namespace.get(
                 "primary_key_field", model._meta.pk.name
@@ -108,15 +111,9 @@ class BaseIndexMetaclass(type):
                     f"primary_key_field named {primary_key_field}"
                 )
 
-            validate_searchable_fields(
-                name, searchable_fields, model_field_names, model
-            )
-            validate_filterable_fields(
-                name, filterable_fields, model_field_names, model
-            )
-            validate_sortable_fields(
-                name, sortable_fields, model_field_names, model
-            )
+            validate_searchable_fields(model, searchable_fields)
+            validate_filterable_fields(model, filterable_fields)
+            validate_sortable_fields(model, sortable_fields)
 
             signals.post_save.connect(mcs.post_save_handler, sender=model)
             signals.post_delete.connect(mcs.post_delete_handler, sender=model)
