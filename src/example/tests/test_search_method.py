@@ -3,12 +3,13 @@ Test cases for the CLI actions.
 """
 
 from django.test import TestCase
+from meilisearch.errors import MeilisearchApiError
 
 from example.indexes import PostIndex
 
 
 # pylint: disable=too-many-public-methods
-class TestInitialize(TestCase):
+class TestSuccessfulSearchMethod(TestCase):
     """
     Test cases for the CLI actions.
     """
@@ -440,3 +441,17 @@ class TestInitialize(TestCase):
 
         id_list = [hit["id"] for hit in results["hits"]]
         self.assertEqual(sorted(id_list), [12, 18, 21, 34, 36, 48])
+
+
+class TestFailedSearchMethod(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        PostIndex.destroy()
+    
+    def test_failed_search_method(self):
+        response = PostIndex.search("")
+        self.assertEqual(response["hits"], [])
+        self.assertEqual(response["status_code"], 404)
+        self.assertEqual(response["code"], "index_not_found")
+        self.assertEqual(response["type"], "invalid_request")
+        self.assertEqual(response["message"], "Index `posts` not found.")

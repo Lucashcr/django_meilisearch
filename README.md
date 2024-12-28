@@ -32,6 +32,7 @@ Run the Django development server
 - [x] Config Mypy type checking and solve errors
 - [x] Config Black code format and apply it
 - [x] Solve Pylint advices
-- [ ] Review tests coverage
+- [ ] Implements results iterator using serializers
+- [x] Review tests coverage
 - [ ] Implements GitHub Actions workflow
 - [ ] Implements views (explore indexed data) ???
