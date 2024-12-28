@@ -34,5 +34,5 @@ Run the Django development server
 - [x] Solve Pylint advices
 - [ ] Implements results iterator using serializers
 - [x] Review tests coverage
-- [ ] Implements GitHub Actions workflow
+- [x] Implements GitHub Actions workflow
 - [ ] Implements views (explore indexed data) ???

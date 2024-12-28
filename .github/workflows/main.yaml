@@ -1,0 +1,48 @@
+name: Django Meilisearch GitHub Actions
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+
+
+jobs:
+  Run-Tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [ '3.9', '3.10', '3.11', '3.12' ]
+        meilisearch-version: ['v1.9', 'v1.10', 'v1.11', 'v1.12']
+
+    services:
+      meilisearch:
+        image: getmeili/meilisearch:${{ matrix.meilisearch-version }}
+        ports:
+          - "7700:7700"
+        env:
+          MEILI_MASTER_KEY: "meilimasterkey"
+          MEILI_NO_ANALYTICS: true    
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Setup Poetry
+        uses: abatilo/actions-poetry@v2
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Run tests
+        env:
+          SECRET_KEY: "secret-key"
+          DEBUG: False
+          DATABASE_URL: "postgres://postgres:postgres@localhost:5432/postgres"
+          MEILISEARCH_URL: "http://localhost:7700"
+          MEILISEARCH_API_KEY: "meilimasterkey"
+        run: poetry run pytest

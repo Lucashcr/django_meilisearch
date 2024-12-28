@@ -6,7 +6,7 @@ authors = ["Lucas Rocha <lucash.rocha@hotmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.9"
 django = "^4"
 meilisearch = "^0.31.4"
 alive-progress = "^3.1.5"

@@ -2,7 +2,7 @@
 This module contains the type definitions which are used in the library.
 """
 
-from typing import TypedDict
+from typing import TypedDict, Union
 
 
 class OptParams(TypedDict):
@@ -15,7 +15,7 @@ class OptParams(TypedDict):
     limit: int
     hits_per_page: int
     page: int
-    filter: str | list
+    filter: Union[str, list]
     facets: list[str]
     attributes_to_retrieve: list[str]
     attributes_to_crop: list[str]
