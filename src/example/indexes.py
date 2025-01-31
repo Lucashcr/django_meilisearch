@@ -38,3 +38,13 @@ class PostIndexWithoutUseTimestamp(BaseIndex):
     name = "posts_without_timestamp"
     model = Post
     use_timestamp = False
+
+
+class PostIndexWith10IndexingBatchSize(BaseIndex):
+    """
+    Index definition for the Post model.
+    """
+
+    name = "posts_without_timestamp"
+    model = Post
+    indexing_batch_size = 10

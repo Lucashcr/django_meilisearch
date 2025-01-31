@@ -42,7 +42,9 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
     searchable_fields: Optional[Iterable[str]] = None
     filterable_fields: Optional[Iterable[str]] = None
     sortable_fields: Optional[Iterable[str]] = None
+
     use_timestamp: bool = False
+    indexing_batch_size: int = 100_000
 
     serializer: Type[Serializer]
 
@@ -89,7 +91,8 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
     @classmethod
     def apopulate(cls) -> list[Task]:
         """Populate the index asynchronously.
-        The method will index the entire database in batches of 1000.
+        The method will index the entire database in batches of a number of documents
+        specified by the `indexing_batch_size` attribute.
 
         Returns:
             list[Task]: List of Meilisearch task objects.
@@ -104,8 +107,8 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
         db_count = cls.model.objects.count()
 
         tasks = []
-        for i in range(0, db_count, 1000):
-            batch = cls.model.objects.all()[i : i + 1000]
+        for i in range(0, db_count, cls.indexing_batch_size):
+            batch = cls.model.objects.all()[i : i + cls.indexing_batch_size]
             task_info = index.add_documents(
                 cls.serializer(batch, many=True).data,
                 cls.primary_key_field,
@@ -118,7 +121,8 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
     @classmethod
     def populate(cls) -> list[Task]:
         """Populate the index.
-        The method will index the entire database in batches of 1000.
+        The method will index the entire database in batches of a number of documents
+        specified by the `indexing_batch_size` attribute.
 
         Returns:
             list[Task]: List of Meilisearch task objects.
@@ -134,8 +138,10 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
 
         tasks = []
         with alive_bar(db_count, title=f"Indexing {cls.name}") as progress:
-            for i in range(0, db_count, 1000):
-                batch = cls.model.objects.all()[i : i + 1000]
+            for i in range(0, db_count, cls.indexing_batch_size):
+                batch = cls.model.objects.all()[
+                    i : i + cls.indexing_batch_size
+                ]
                 task_info = index.add_documents(
                     cls.serializer(batch, many=True).data,
                     cls.primary_key_field,
