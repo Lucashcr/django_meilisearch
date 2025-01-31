@@ -52,7 +52,7 @@ ignore_missing_imports = true
 [tool.pylint]
 load-plugins = ["pylint_django"]
 django-settings-module = "mysite.settings"
-ignore = ["migrations"]
+ignore = ["migrations", "tests"]
 
 [tool.poetry.scripts]
 check = "scripts.check:run"

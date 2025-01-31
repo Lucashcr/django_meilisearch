@@ -447,7 +447,7 @@ class TestFailedSearchMethod(TestCase):
     @classmethod
     def setUpTestData(cls):
         PostIndex.destroy()
-    
+
     def test_failed_search_method(self):
         response = PostIndex.search("")
         self.assertEqual(response["hits"], [])

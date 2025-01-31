@@ -15,7 +15,6 @@ class TestTimestampField(TestCase):
         representation = self.serializer_field.to_representation(value)
         result = 1735253400.0
         self.assertEqual(representation, result)
-        
 
     def test_to_internal_value(self):
         value = 1735253400.0
