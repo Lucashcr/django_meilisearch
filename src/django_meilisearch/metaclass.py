@@ -132,10 +132,11 @@ class BaseIndexMetaclass(type):
             )
 
             datetime_fields = {}
-            for field_name in model_field_names:
-                field_class = getattr(model, field_name)
-                if isinstance(field_class.field, DateTimeField):
-                    datetime_fields[field_name] = TimestampField()
+            if bool(namespace.get("use_timestamp")):
+                for field_name in model_field_names:
+                    field_class = getattr(model, field_name)
+                    if isinstance(field_class.field, DateTimeField):
+                        datetime_fields[field_name] = TimestampField()
 
             cls.serializer = type(
                 f"{name}Serializer",

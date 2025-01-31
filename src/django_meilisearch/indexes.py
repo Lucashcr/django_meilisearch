@@ -42,6 +42,7 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
     searchable_fields: Optional[Iterable[str]] = None
     filterable_fields: Optional[Iterable[str]] = None
     sortable_fields: Optional[Iterable[str]] = None
+    use_timestamp: bool = False
 
     serializer: Type[Serializer]
 

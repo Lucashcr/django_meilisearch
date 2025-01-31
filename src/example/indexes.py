@@ -18,3 +18,23 @@ class PostIndex(BaseIndex):
     # searchable_fields = [...]       # (default is all fields in model)
     # filterable_fields = [...]       # (default is all fields in model)
     # sortable_fields = [...]         # (default is all fields in model)
+
+
+class PostIndexWithUseTimestamp(BaseIndex):
+    """
+    Index definition for the Post model.
+    """
+
+    name = "posts_with_timestamp"
+    model = Post
+    use_timestamp = True
+
+
+class PostIndexWithoutUseTimestamp(BaseIndex):
+    """
+    Index definition for the Post model.
+    """
+
+    name = "posts_without_timestamp"
+    model = Post
+    use_timestamp = False
