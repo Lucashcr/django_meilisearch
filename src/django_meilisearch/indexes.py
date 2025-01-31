@@ -4,7 +4,7 @@ populating, rebuilding, deleting, cleaning and searching an index in MeiliSearch
 """
 
 from http import HTTPStatus
-from typing import Iterable, Optional, Type
+from typing import Any, Iterable, Optional, Type
 from typing_extensions import Unpack
 
 from alive_progress import alive_bar
@@ -171,7 +171,7 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
     @classmethod
     def search(
         cls, term: str, **opt_params: Unpack[OptParams]
-    ) -> tuple[dict, HTTPStatus]:
+    ) -> dict[str, Any]:
         """Do a search on the index.
 
         Args:
