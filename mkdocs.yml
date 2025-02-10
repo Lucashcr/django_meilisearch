@@ -3,8 +3,6 @@ repo_url: https://github.com/Lucashcr/django_meilisearch
 
 theme:
   name: material  # Tema (recomendo o Material for MkDocs)
-  palette:
-    - scheme: slate
 #  logo: images/logo.png  # Opcional, seu logotipo
 
 nav:
@@ -16,13 +14,13 @@ nav:
   - Contributing: contributing.md
   - License: license.md
 
-# markdown_extensions:
-#   - toc
-#   - tables
-#   - admonition  # Para notas, avisos, etc.
-#   - codehilite  # Realce de sintaxe em blocos de código
-#   - pymdownx.superfences  # Suporte para múltiplos blocos de código
-#   - pymdownx.tabbed  # Abas para organizar conteúdo
+markdown_extensions:
+  - toc
+  - tables
+  - admonition  # Para notas, avisos, etc.
+  # - codehilite  # Realce de sintaxe em blocos de código
+  - pymdownx.superfences  # Suporte para múltiplos blocos de código
+  - pymdownx.tabbed  # Abas para organizar conteúdo
 
 # extra_css:
 #   - css/custom.css  # Arquivo de CSS customizado (opcional)
