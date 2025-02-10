@@ -8,9 +8,29 @@ from django.db.models import Model
 
 from django_meilisearch.exceptions import (
     InvalidFilterableFieldError,
+    InvalidPrimaryKeyError,
     InvalidSearchableFieldError,
     InvalidSortableFieldError,
 )
+
+
+def validate_primary_key_field(model: type[Model], primary_key_field: str) -> None:
+    if not isinstance(primary_key_field, str):
+        raise InvalidPrimaryKeyError(
+            f"primary_key_field must be a string"
+        )
+
+    if not hasattr(model, primary_key_field):
+        raise InvalidPrimaryKeyError(
+            f"{model.__name__} does not have a"
+            f"primary_key_field named {primary_key_field}"
+        )
+
+    field_instance = model._meta.get_field(primary_key_field)
+    if not field_instance.primary_key or not field_instance.unique:
+        raise InvalidPrimaryKeyError(
+            f"{model.__name__}.{primary_key_field} is not a primary key field"
+        )
 
 
 def validate_searchable_fields(

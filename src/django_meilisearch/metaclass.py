@@ -19,6 +19,7 @@ from django_meilisearch.exceptions import (
 from django_meilisearch.utils import exists_field_in_namespace
 from django_meilisearch.validators import (
     validate_filterable_fields,
+    validate_primary_key_field,
     validate_searchable_fields,
     validate_sortable_fields,
 )
@@ -100,17 +101,7 @@ class BaseIndexMetaclass(type):
                 "primary_key_field", model._meta.pk.name
             )
 
-            if not isinstance(primary_key_field, str):
-                raise InvalidPrimaryKeyError(
-                    f"{name}.Django.primary_key_field must be a string"
-                )
-
-            if not hasattr(model, primary_key_field):
-                raise InvalidPrimaryKeyError(
-                    f"{model.__name__} does not have a"
-                    f"primary_key_field named {primary_key_field}"
-                )
-
+            validate_primary_key_field(model, primary_key_field)
             validate_searchable_fields(model, searchable_fields)
             validate_filterable_fields(model, filterable_fields)
             validate_sortable_fields(model, sortable_fields)
