@@ -3,7 +3,6 @@ This module contains the Document class, which provides methods for creating,
 populating, rebuilding, deleting, cleaning and searching an index in MeiliSearch.
 """
 
-from http import HTTPStatus
 from typing import Any, Iterable, Optional, Type
 from typing_extensions import Unpack
 
@@ -179,6 +178,7 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
     def search(
         cls, term: str, **opt_params: Unpack[OptParams]
     ) -> dict[str, Any]:
+        # pylint: disable=line-too-long
         """Do a search on the index.
 
         Args:

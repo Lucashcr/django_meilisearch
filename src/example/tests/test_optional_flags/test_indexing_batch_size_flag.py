@@ -14,7 +14,7 @@ class TestIndexingBatchSizeFlag(TestCase):
     """
 
     fixtures = ["posts.json"]
-    
+
     def test_default_indexing_batch_size_flag(self):
         """
         Test the success of the instance.

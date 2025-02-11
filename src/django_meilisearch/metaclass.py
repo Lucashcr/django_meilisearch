@@ -13,7 +13,6 @@ from rest_framework.serializers import ModelSerializer
 from django_meilisearch.exceptions import (
     InvalidDjangoModelError,
     InvalidIndexNameError,
-    InvalidPrimaryKeyError,
     MissingRequiredFieldError,
 )
 from django_meilisearch.utils import exists_field_in_namespace

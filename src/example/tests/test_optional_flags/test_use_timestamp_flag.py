@@ -4,7 +4,11 @@ Test cases for the instantiation of the index.
 
 from django.test import TestCase
 
-from example.indexes import PostIndex, PostIndexWithUseTimestamp, PostIndexWithoutUseTimestamp
+from example.indexes import (
+    PostIndex,
+    PostIndexWithUseTimestamp,
+    PostIndexWithoutUseTimestamp,
+)
 
 
 # Create your tests here.
@@ -14,7 +18,7 @@ class TestUseTimestampFlag(TestCase):
     """
 
     fixtures = ["posts.json"]
-    
+
     def test_default_use_timestamp_flag(self):
         """
         Test the success of the instance.
@@ -38,7 +42,9 @@ class TestUseTimestampFlag(TestCase):
         PostIndexWithoutUseTimestamp.clean()
         PostIndexWithoutUseTimestamp.destroy()
 
-        self.assertEqual(result["hits"][0]["created_at"], "2024-09-28T19:02:19.537000Z")
+        self.assertEqual(
+            result["hits"][0]["created_at"], "2024-09-28T19:02:19.537000Z"
+        )
 
     def test_use_timestamp_flag_as_true(self):
         """

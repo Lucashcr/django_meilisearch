@@ -14,11 +14,15 @@ from django_meilisearch.exceptions import (
 )
 
 
-def validate_primary_key_field(model: type[Model], primary_key_field: str) -> None:
+def validate_primary_key_field(
+    model: type[Model], primary_key_field: str
+) -> None:
+    """
+    Validate the primary key field of an index. The primary key field must be a string
+    and must be a primary key or a unique field of the model.
+    """
     if not isinstance(primary_key_field, str):
-        raise InvalidPrimaryKeyError(
-            f"primary_key_field must be a string"
-        )
+        raise InvalidPrimaryKeyError("primary_key_field must be a string")
 
     if not hasattr(model, primary_key_field):
         raise InvalidPrimaryKeyError(
