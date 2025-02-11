@@ -2,6 +2,12 @@
 
 A Meilisearch integration for Django project
 
+[![Documentation](https://img.shields.io/badge/Documentação-Acessar-blue)](https://lucashcr.github.io/django_meilisearch/)
+
+[![PyPI version](https://badge.fury.io/py/django-meilisearch.svg)](https://badge.fury.io/py/django-meilisearch)
+
+![workflow](https://github.com/Lucashcr/django_meilisearch/actions/workflows/main.yaml/badge.svg)
+
 ## How to run
 
 Start a Docker container with Meilisearch:
@@ -32,7 +38,5 @@ Run the Django development server
 - [x] Config Mypy type checking and solve errors
 - [x] Config Black code format and apply it
 - [x] Solve Pylint advices
-- [ ] Implements results iterator using serializers
 - [x] Review tests coverage
 - [x] Implements GitHub Actions workflow
-- [ ] Implements views (explore indexed data) ???
