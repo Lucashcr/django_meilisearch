@@ -182,12 +182,34 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
         """Do a search on the index.
 
         Args:
-            term (str): Search term.
-            to_queryset (bool, optional): If True, the search results will be converted
-            to Django model instances. Defaults to False.
+            term (str): Define the search query term.
+            limit (Optional[int]): Used with `offset` to paginate results, define the number of hits to return. (Default: 20)
+            offset (Optional[int]): Used with `limit` to paginate results, define the offset of the first hit to return. (Default: 0)
+            hits_per_page (Optional[int]): Used with `page` to paginate results, define the number of hits to return per page. (Default: 20)
+            page (Optional[int]): Used with `hits_per_page` to paginate results, define the page to return. (Default: 1)
+            filter (Optional[Union[str, list]]): Define the filter query for the search.
+            facets (Optional[list[str]]): Define the list of attributes to retrieve facets.
+            attributes_to_retrieve (Optional[list[str]]): Define the attributes to retrieve.
+            attributes_to_crop (Optional[list[str]]): Define the attributes to crop and, if set, the length used to crop each attribute value.
+            crop_length (Optional[int]): Define the length used to crop the attributes values. (Default: 10)
+            crop_marker (Optional[str]): Define the characters used to crop the attributes values. (Default: "...")
+            attributes_to_highlight (Optional[list[str]]): Define the attributes to highlight in the search results.
+            highlight_pre_tag (Optional[str]): Define the string to insert before the highlighted parts in the attributes values. (Default: "<em>")
+            highlight_post_tag (Optional[str]): Define the string to insert after the highlighted parts in the attributes values. (Default: "</em>")
+            show_matches_position (Optional[bool]): Define whether to show the matches position in the attributes values. (Default: False)
+            sort (Optional[list[str]]): Define the attributes to sort the search results.
+            matching_strategy (Optional[str]): Defines the strategy used to match query terms in documents. (Default: "last")
+            show_ranking_score (Optional[bool]): Define whether to show the ranking score in the search results. (Default: False)
+            show_ranking_score_details (Optional[bool]): Define whether to show the ranking score details in the search results. (Default: False)
+            ranking_score_threshold (Optional[float]): Define the threshold used to filter the search results.
+            attributes_to_search_on (Optional[list[str]]): Define the attributes to search on. If not set, the default attributes to search on are used.
 
         Returns:
             dict: Search results.
+
+        _(See the MeiliSearch documentation to learn more about the options available for the search method and their usage.)_
+
+        https://www.meilisearch.com/docs/reference/api/search
         """
 
         if not opt_params.get("attributes_to_search_on"):
