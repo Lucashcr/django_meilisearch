@@ -9,7 +9,7 @@
       
       
       
-        <link rel="prev" href="../configuration/">
+        <link rel="prev" href="..">
       
       
         <link rel="next" href="../advanced_features/">
@@ -25,9 +25,6 @@
     
     
       <link rel="stylesheet" href="../assets/stylesheets/main.a40c8224.min.css">
-      
-        
-        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -56,14 +53,7 @@
   </head>
   
   
-    
-    
-      
-    
-    
-    
-    
-    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
+    <body dir="ltr">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -114,18 +104,6 @@
         </div>
       </div>
     </div>
-    
-      
-        <form class="md-header__option" data-md-component="palette">
-  
-    
-    
-    
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
-    
-  
-</form>
-      
     
     
       <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
@@ -254,46 +232,6 @@
       
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../installation/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Installation
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../configuration/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Configuration
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
     
   
   
@@ -343,6 +281,39 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#installation-and-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation and configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation and configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#add-library-to-installed_apps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add library to INSTALLED_APPS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-meilisearch-in-settingspy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configure Meilisearch in settings.py
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#create-a-meilisearch-index-from-a-django-model" class="md-nav__link">
     <span class="md-ellipsis">
       Create a Meilisearch index from a Django model
@@ -388,7 +359,7 @@
         
   
   <span class="md-ellipsis">
-    Advenced Features
+    Advanced Features
   </span>
   
 
@@ -464,6 +435,39 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#installation-and-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation and configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation and configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#add-library-to-installed_apps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add library to INSTALLED_APPS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-meilisearch-in-settingspy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configure Meilisearch in settings.py
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#create-a-meilisearch-index-from-a-django-model" class="md-nav__link">
     <span class="md-ellipsis">
       Create a Meilisearch index from a Django model
@@ -509,13 +513,85 @@
 
 
 <h1 id="basic-usage">Basic usage</h1>
-<p>...</p>
+<p>This tutorial will guide you through the basic usage of the <code>django_meilisearch</code> library. You will learn how to install the library, configure Meilisearch in your Django project, create a Meilisearch index from a Django model, synchronize data, and perform a basic search.</p>
+<h2 id="installation-and-configuration">Installation and configuration</h2>
+<p>Install the library in your Django project using your preferred package manager. For example, using <code>pip</code>:</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>django_meilisearch
+</code></pre></div>
+<h3 id="add-library-to-installed_apps">Add library to INSTALLED_APPS</h3>
+<p>To use the library, it's necessary to add it to the <code>INSTALLED_APPS</code> list in your Django project's <code>settings.py</code> file.</p>
+<div class="highlight"><pre><span></span><code><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="o">...</span>
+    <span class="s1">&#39;django_meilisearch&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+</code></pre></div>
+<h3 id="configure-meilisearch-in-settingspy">Configure Meilisearch in <code>settings.py</code></h3>
+<p>Add the following configuration to your Django project's <code>settings.py</code> file to connect to your Meilisearch server:</p>
+<div class="highlight"><pre><span></span><code><span class="n">DJANGO_MEILISEARCH</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:7700&quot;</span><span class="p">,</span>  <span class="c1"># Your MeiliSearch host</span>
+    <span class="s2">&quot;api_key&quot;</span><span class="p">:</span> <span class="s2">&quot;meilisearch_master_key&quot;</span><span class="p">,</span>  <span class="c1"># Your MeiliSearch master key</span>
+    <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># Timeout for MeiliSearch requests in seconds (optional)</span>
+<span class="p">}</span>
+</code></pre></div>
 <h2 id="create-a-meilisearch-index-from-a-django-model">Create a Meilisearch index from a Django model</h2>
-<p>...</p>
+<p>To create a Meilisearch index from a Django model, you need to define a index class that inherits from <code>BaseIndex</code> and specify the model to index.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">django_meilisearch.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseIndex</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">myapp.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">MyModel</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyIndex</span><span class="p">(</span><span class="n">BaseIndex</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;my_index&quot;</span>  <span class="c1"># Name of the Meilisearch index</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">MyModel</span>  <span class="c1"># Django model to index</span>
+</code></pre></div>
 <h2 id="how-to-synchronize-data">How to synchronize data</h2>
-<p>...</p>
+<p>To synchronize data between your Django model and the Meilisearch index, the library provides management commands to synchronize data between your Django model and the Meilisearch index. They have the following common syntax:</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>manage.py<span class="w"> </span>meilisearch<span class="w"> </span><span class="o">{</span>action<span class="o">}</span><span class="w"> </span><span class="o">{</span>index_name<span class="o">}</span><span class="w"> </span>
+</code></pre></div>
+<p>The <code>index_name</code> parameter is the name of the Meilisearch index to synchronize. If you don't specify an index name, the library will try to apply the <code>action</code> synchronize all indexes.</p>
+<p>The <code>action</code> parameter can be one of the following:</p>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>create</code></td>
+<td>Create the Meilisearch index, if it doesn't exist. Otherwise, it will do nothing.</td>
+</tr>
+<tr>
+<td><code>populate</code></td>
+<td>Populate an existing Meilisearch index with data from the Django model. If the index doesn't exist, it will return an error.</td>
+</tr>
+<tr>
+<td><code>rebuild</code></td>
+<td>Destroy the Meilisearch index, recreate it, and populate it with data from the Django model.</td>
+</tr>
+<tr>
+<td><code>destroy</code></td>
+<td>Clean and destroy the Meilisearch index.</td>
+</tr>
+</tbody>
+</table>
+<p>The actions listed above are synchronous, meaning that they will block the execution of the command until the operation is completed. If you have a large dataset, consider using the asynchronous versions of these commands, which are preffixed with <code>a</code>. For example, <code>apopulate</code> will populate the index asynchronously.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The asynchronous versions of the commands will return a task ID (or a list of task IDs if you are populating a large dataset) that you can use to check the status of the operation.</p>
+</div>
 <h2 id="basic-search-example">Basic search example</h2>
-<p>...</p>
+<p>To perform a basic search using the Meilisearch index, you can use the <code>search</code> method provided by the index class. The <code>search</code> method accepts a query string and returns a list of search results.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">myapp.indexes</span><span class="w"> </span><span class="kn">import</span> <span class="n">MyIndex</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyView</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">MyIndex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s2">&quot;results&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">})</span>
+</code></pre></div>
 
 
 

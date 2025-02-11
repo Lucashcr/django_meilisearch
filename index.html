@@ -10,7 +10,7 @@
       
       
       
-        <link rel="next" href="installation/">
+        <link rel="next" href="basic_usage/">
       
       
       <link rel="icon" href="assets/images/favicon.png">
@@ -23,9 +23,6 @@
     
     
       <link rel="stylesheet" href="assets/stylesheets/main.a40c8224.min.css">
-      
-        
-        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -54,14 +51,7 @@
   </head>
   
   
-    
-    
-      
-    
-    
-    
-    
-    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
+    <body dir="ltr">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -112,18 +102,6 @@
         </div>
       </div>
     </div>
-    
-      
-        <form class="md-header__option" data-md-component="palette">
-  
-    
-    
-    
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
-    
-  
-</form>
-      
     
     
       <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
@@ -281,9 +259,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#objective" class="md-nav__link">
+  <a href="#objectives" class="md-nav__link">
     <span class="md-ellipsis">
-      Objective
+      Objectives
     </span>
   </a>
   
@@ -322,46 +300,6 @@
   
   
     <li class="md-nav__item">
-      <a href="installation/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Installation
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="configuration/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Configuration
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="basic_usage/" class="md-nav__link">
         
   
@@ -386,7 +324,7 @@
         
   
   <span class="md-ellipsis">
-    Advenced Features
+    Advanced Features
   </span>
   
 
@@ -462,9 +400,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#objective" class="md-nav__link">
+  <a href="#objectives" class="md-nav__link">
     <span class="md-ellipsis">
-      Objective
+      Objectives
     </span>
   </a>
   
@@ -507,13 +445,45 @@
 
 
 <h1 id="welcome-to-django-meilisearch-documentation">Welcome to Django Meilisearch documentation</h1>
-<p>...</p>
-<h2 id="objective">Objective</h2>
-<p>...</p>
+<p>Django Meilisearch Integration is a simple and efficient way to integrate Meilisearch into Django projects. This library allows you to easily index and search your Django models with high performance and minimal configuration.</p>
+<h2 id="objectives">Objectives</h2>
+<p>The goal of this project is to provide a seamless integration between Django and Meilisearch, enabling:</p>
+<ul>
+<li><strong>Automatic and CLI-based indexing</strong> of Django models.</li>
+<li><strong>Real-time search capabilities</strong> with powerful filtering and ranking.</li>
+<li><strong>Simple and flexible configuration</strong>, requiring minimal setup.</li>
+</ul>
 <h2 id="benefits-to-use">Benefits to use</h2>
-<p>...</p>
+<p>By using Django Meilisearch, you gain the following advantages:</p>
+<ul>
+<li>🔎 <strong>Blazing Fast Search:</strong> Meilisearch offers near-instantaneous search with typo tolerance.</li>
+<li>🔧 <strong>Easy Setup:</strong> No complex configurations; works with Django models effortlessly.</li>
+<li>🌐 <strong>Open Source:</strong> Free to use and improve under the MIT license.</li>
+</ul>
 <h2 id="minimal-requirements">Minimal requirements</h2>
-<p>...</p>
+<p>To use this integration, ensure your environment meets the following requirements:</p>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python</td>
+<td>3.9+</td>
+</tr>
+<tr>
+<td>Django</td>
+<td>4.0+</td>
+</tr>
+<tr>
+<td>Meilisearch Server</td>
+<td>1.9+</td>
+</tr>
+</tbody>
+</table>
 
 
 

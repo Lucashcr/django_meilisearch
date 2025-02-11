@@ -26,9 +26,6 @@
     
       <link rel="stylesheet" href="../assets/stylesheets/main.a40c8224.min.css">
       
-        
-        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
-      
       
 
 
@@ -56,14 +53,7 @@
   </head>
   
   
-    
-    
-      
-    
-    
-    
-    
-    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
+    <body dir="ltr">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -72,7 +62,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#contributing" class="md-skip">
+        <a href="#contributing-to-django-meilisearch-integration" class="md-skip">
           Skip to content
         </a>
       
@@ -114,18 +104,6 @@
         </div>
       </div>
     </div>
-    
-      
-        <form class="md-header__option" data-md-component="palette">
-  
-    
-    
-    
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
-    
-  
-</form>
-      
     
     
       <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
@@ -257,46 +235,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../installation/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Installation
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../configuration/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Configuration
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../basic_usage/" class="md-nav__link">
         
   
@@ -321,7 +259,7 @@
         
   
   <span class="md-ellipsis">
-    Advenced Features
+    Advanced Features
   </span>
   
 
@@ -346,6 +284,17 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -355,6 +304,130 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-contribute" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to contribute
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to contribute">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-fork-the-repository" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Fork the repository
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-clone-your-fork" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Clone your fork
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-set-up-the-development-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Set up the development environment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-create-a-new-branch" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Create a new branch
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-make-your-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Make your changes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-run-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Run tests
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-commit-and-push-your-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. Commit and push your changes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-open-a-pull-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      8. Open a Pull Request
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contribution-guidelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      💡 Contribution guidelines
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#need-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      🤝 Need help?
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -400,6 +473,119 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-contribute" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to contribute
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to contribute">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-fork-the-repository" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Fork the repository
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-clone-your-fork" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Clone your fork
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-set-up-the-development-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Set up the development environment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-create-a-new-branch" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Create a new branch
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-make-your-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Make your changes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-run-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Run tests
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-commit-and-push-your-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. Commit and push your changes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-open-a-pull-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      8. Open a Pull Request
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contribution-guidelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      💡 Contribution guidelines
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#need-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      🤝 Need help?
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -416,8 +602,90 @@
   
 
 
-<h1 id="contributing">Contributing</h1>
-<p>...</p>
+<h1 id="contributing-to-django-meilisearch-integration">Contributing to Django Meilisearch integration</h1>
+<p>Thank you for considering contributing to this project! We welcome contributions from the community to help improve and expand the Django-Meilisearch integration.</p>
+<h2 id="how-to-contribute">How to contribute</h2>
+<h3 id="1-fork-the-repository">1. Fork the repository</h3>
+<p>Click the <strong>Fork</strong> button at the top-right corner of the repository page to create your own copy.</p>
+<h3 id="2-clone-your-fork">2. Clone your fork</h3>
+<p>Clone your forked repository to your local machine:</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/<span class="o">{</span>your_username<span class="o">}</span>/django_meilisearch.git
+<span class="nb">cd</span><span class="w"> </span>django_meilisearch
+</code></pre></div>
+<h3 id="3-set-up-the-development-environment">3. Set up the development environment</h3>
+<p>Ensure you have Python and Poetry installed and set up a virtual environment:</p>
+<div class="highlight"><pre><span></span><code>poetry<span class="w"> </span>install
+poetry<span class="w"> </span>shell
+</code></pre></div>
+<p>Additionally, you need to have a Meilisearch instance running. To make things easier, you can use Docker for this:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--name<span class="w"> </span>meilisearch<span class="w"> </span>-p<span class="w"> </span><span class="m">7700</span>:7700<span class="w"> </span>--rm<span class="w"> </span>-d<span class="w"> </span>getmeili/meilisearch:latest
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>I use to run the container using <code>--rm</code> option to automatically remove the container when it stops, but you can ommit this option if you want to reuse the same container.</p>
+</div>
+<h3 id="4-create-a-new-branch">4. Create a new branch</h3>
+<p>Always create a new branch for your changes:</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>switch<span class="w"> </span>-c<span class="w"> </span><span class="o">{</span>prefix<span class="o">}</span>/<span class="o">{</span>description<span class="o">}</span><span class="w">  </span><span class="c1"># or git checkout -b {prefix}/{description} if you are using an older version of git</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>We use Git Flow to manage branches with the default naming convention. Make sure to follow the naming convention for your branch. If you prefer, you can use the <a href="https://github.com/nvie/gitflow">Git Flow extension</a>.</p>
+</div>
+<table>
+<thead>
+<tr>
+<th>Branch type</th>
+<th>Prefix</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Feature</td>
+<td>feature</td>
+<td>feature/your-feature-name</td>
+</tr>
+<tr>
+<td>Bugfix</td>
+<td>fix</td>
+<td>fix/your-bug-name</td>
+</tr>
+<tr>
+<td>Hotfix</td>
+<td>hotfix</td>
+<td>hotfix/your-hotfix-name</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-make-your-changes">5. Make your changes</h3>
+<p>Modify the code, add new features, or fix bugs. Make sure to follow the existing code style.</p>
+<h3 id="6-run-tests">6. Run tests</h3>
+<p>Before submitting a pull request, ensure all check and tests pass:</p>
+<div class="highlight"><pre><span></span><code>poetry<span class="w"> </span>run<span class="w"> </span>check
+</code></pre></div>
+<h3 id="7-commit-and-push-your-changes">7. Commit and push your changes</h3>
+<p>Commit your changes and push them to your fork:</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>.
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Your commit message&quot;</span>
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>feature/your-feature-name
+</code></pre></div>
+<h3 id="8-open-a-pull-request">8. Open a Pull Request</h3>
+<p>Go to the original repository and click the <strong>New pull request</strong> button. Fill in the details and submit your pull request.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Make sure to reference the issue you are addressing in your pull request description and to provide a detailed explanation of your changes.</p>
+</div>
+<h2 id="contribution-guidelines">💡 Contribution guidelines</h2>
+<ul>
+<li>Make sure to follow the package's code style.</li>
+<li>Write tests for new features and bug fixes.</li>
+<li>Keep commits clean and concise.</li>
+<li>Update the documentation if necessary.</li>
+</ul>
+<h2 id="need-help">🤝 Need help?</h2>
+<p>If you have any questions or need help with anything, feel free to open an issue or reach out to the maintainers.</p>
+<p><strong><em>Happy coding! 🚀</em></strong></p>
 
 
 
