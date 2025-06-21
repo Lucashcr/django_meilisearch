@@ -161,9 +161,9 @@ class Command(BaseCommand):
             self.info(f'Index destroying status: "{task.status}"')
             self.info(f"Details: {task.details}")
 
-    def aclear(self, index_name: str, index_cls: type) -> None:
+    def aclean(self, index_name: str, index_cls: type) -> None:
         """
-        Asynchronous method to clear an index.
+        Asynchronous method to clean an index.
 
         Args:
             index_name (str): Index name.
@@ -174,12 +174,12 @@ class Command(BaseCommand):
             return
 
         task = index_cls.aclean()
-        self.success(f'Index cleared: "{index_name}"')
+        self.success(f'Index cleaned: "{index_name}"')
         self.info(f"Task ID: {task.uid}")
 
-    def clear(self, index_name: str, index_cls: type) -> None:
+    def clean(self, index_name: str, index_cls: type) -> None:
         """
-        Synchronous method to clear an index.
+        Synchronous method to clean an index.
 
         Args:
             index_name (str): Index name.
