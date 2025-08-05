@@ -27,7 +27,7 @@ def exists_field_in_namespace(field: str, namespace: dict) -> bool:
     return True
 
 
-def get_datetime_fields(namespace, model, model_field_names):
+def get_datetime_fields(model):
     """
     Get the datetime fields from the model based on the namespace.
 
@@ -39,13 +39,12 @@ def get_datetime_fields(namespace, model, model_field_names):
     Returns:
         list[str]: List of datetime field names.
     """
+    model_field_names = [field.name for field in model._meta.fields]
 
     datetime_fields = []
-
-    if bool(namespace.get("use_timestamp")):
-        for field_name in model_field_names:
-            field_class = getattr(model, field_name)
-            if isinstance(field_class.field, DateTimeField):
-                datetime_fields.append(field_name)
+    for field_name in model_field_names:
+        field_class = getattr(model, field_name)
+        if isinstance(field_class.field, DateTimeField):
+            datetime_fields.append(field_name)
 
     return datetime_fields

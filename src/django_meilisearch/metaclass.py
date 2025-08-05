@@ -118,16 +118,17 @@ class BaseIndexMetaclass(type):
             cls.filterable_fields = filterable_fields
             cls.sortable_fields = sortable_fields
 
-            if namespace.get("serializer_class") is not None:
-                validate_drf_serializer(name, namespace)
+            serializer_class = namespace.get("serializer_class")
+            if serializer_class is not None:
+                validate_drf_serializer(name, serializer_class)
                 cls.serializer = SerializerFacade(
-                    serializer_class=namespace["serializer_class"],
+                    serializer_class=serializer_class,
                 )
             else:
-                datetime_fields = get_datetime_fields(
-                    namespace,
-                    model,
-                    model_field_names,
+                datetime_fields = (
+                    get_datetime_fields(model)
+                    if namespace.get("use_timestamp", False)
+                    else []
                 )
                 cls.serializer = SerializerFacade(
                     primary_key_field=primary_key_field,

@@ -122,7 +122,7 @@ def validate_sortable_fields(
             )
 
 
-def validate_drf_serializer(name, namespace):
+def validate_drf_serializer(name, serializer_class):
     """
     Validate the DRF serializer class for the index.
 
@@ -133,7 +133,7 @@ def validate_drf_serializer(name, namespace):
     Raises:
         TypeError: If the serializer_class is not a subclass of ModelSerializer.
     """
-    if not issubclass(namespace["serializer_class"], ModelSerializer):
+    if not issubclass(serializer_class, ModelSerializer):
         raise TypeError(
             f"{name}.serializer_class must be a subclass of ModelSerializer"
         )
