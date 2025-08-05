@@ -27,7 +27,7 @@ jobs:
         run: black --check src
 
       - name: Run pylint
-        run: pylint src
+        run: cd src && pylint .
 
   Run-Tests:
     runs-on: ubuntu-latest
