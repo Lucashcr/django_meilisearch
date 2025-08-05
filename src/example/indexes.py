@@ -23,6 +23,26 @@ class PostIndex(BaseIndex):
 
 class PostIndexWithUseTimestamp(BaseIndex):
     """
+    Index definition for the Post model with use_timestamp flag set to True.
+    """
+
+    name = "posts"
+    model = Post
+    use_timestamp = True
+
+
+class PostIndexWithoutUseTimestamp(BaseIndex):
+    """
+    Index definition for the Post model with use_timestamp flag set to True.
+    """
+
+    name = "posts"
+    model = Post
+    use_timestamp = False
+
+
+class PostIndexWithDrfClassAndTimestamp(BaseIndex):
+    """
     Index definition for the Post model.
     """
 
@@ -31,7 +51,7 @@ class PostIndexWithUseTimestamp(BaseIndex):
     serializer_class = PostSerializerWithTimestamp
 
 
-class PostIndexWithoutUseTimestamp(BaseIndex):
+class PostIndexWithDrfClassAndWithoutUseTimestamp(BaseIndex):
     """
     Index definition for the Post model.
     """

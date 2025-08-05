@@ -10,14 +10,14 @@ class SerializerFacade:
     This class abstracts the underlying serializer implementation and provides a consistent method to serialize data.
     """
 
-    def __init__(self, serializer_class=None, primary_key_field=None):
+    def __init__(self, serializer_class=None, primary_key_field=None, use_timestamp=False, datetime_fields=None):
         if serializer_class is not None:
             self.serializer_class = serializer_class
             self.type = "drf"
             return
 
         if primary_key_field is not None:
-            self.serializer = DjangoCoreSerializer(primary_key_field)
+            self.serializer = DjangoCoreSerializer(primary_key_field, use_timestamp, datetime_fields)
             self.type = "core"
             return
 

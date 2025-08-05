@@ -7,7 +7,7 @@ The Document class is used to define the structure of the index that will be cre
 from typing import Type
 from weakref import WeakValueDictionary
 
-from django.db.models import Model, signals
+from django.db.models import DateTimeField, Model, signals
 from rest_framework.serializers import ModelSerializer
 
 from django_meilisearch.exceptions import (
@@ -128,8 +128,17 @@ class BaseIndexMetaclass(type):
                     serializer_class=namespace["serializer_class"],
                 )
             else:
+                datetime_fields = []
+                if bool(namespace.get("use_timestamp")):
+                    for field_name in model_field_names:
+                        field_class = getattr(model, field_name)
+                        if isinstance(field_class.field, DateTimeField):
+                            datetime_fields.append(field_name)
+                
                 cls.serializer = SerializerFacade(
                     primary_key_field=primary_key_field,
+                    use_timestamp=namespace.get("use_timestamp", False),
+                    datetime_fields=datetime_fields,
                 )
 
             index_label = f"{namespace['model']._meta.app_label}.{namespace['__qualname__']}"
