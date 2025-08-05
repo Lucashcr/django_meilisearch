@@ -318,4 +318,5 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
         """
 
         index = client.get_index(cls.name)
-        return index.get_stats().number_of_documents
+        result = index.get_documents()
+        return result.total
