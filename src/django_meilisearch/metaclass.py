@@ -7,24 +7,25 @@ The Document class is used to define the structure of the index that will be cre
 from typing import Type
 from weakref import WeakValueDictionary
 
-from django.db.models import DateTimeField, Model, signals
-from rest_framework.serializers import ModelSerializer
+from django.db.models import Model, signals
 
 from django_meilisearch.exceptions import (
     InvalidDjangoModelError,
     InvalidIndexNameError,
     MissingRequiredFieldError,
 )
-from django_meilisearch.serializers.core import DjangoCoreSerializer
 from django_meilisearch.serializers.facade import SerializerFacade
-from django_meilisearch.utils import exists_field_in_namespace
+from django_meilisearch.utils import (
+    exists_field_in_namespace,
+    get_datetime_fields,
+)
 from django_meilisearch.validators import (
+    validate_drf_serializer,
     validate_filterable_fields,
     validate_primary_key_field,
     validate_searchable_fields,
     validate_sortable_fields,
 )
-from django_meilisearch.serializers.drf import TimestampField
 
 
 class BaseIndexMetaclass(type):
@@ -118,23 +119,16 @@ class BaseIndexMetaclass(type):
             cls.sortable_fields = sortable_fields
 
             if namespace.get("serializer_class") is not None:
-                if not issubclass(
-                    namespace["serializer_class"], ModelSerializer
-                ):
-                    raise TypeError(
-                        f"{name}.serializer_class must be a subclass of ModelSerializer"
-                    )
+                validate_drf_serializer(name, namespace)
                 cls.serializer = SerializerFacade(
                     serializer_class=namespace["serializer_class"],
                 )
             else:
-                datetime_fields = []
-                if bool(namespace.get("use_timestamp")):
-                    for field_name in model_field_names:
-                        field_class = getattr(model, field_name)
-                        if isinstance(field_class.field, DateTimeField):
-                            datetime_fields.append(field_name)
-                
+                datetime_fields = get_datetime_fields(
+                    namespace,
+                    model,
+                    model_field_names,
+                )
                 cls.serializer = SerializerFacade(
                     primary_key_field=primary_key_field,
                     use_timestamp=namespace.get("use_timestamp", False),

@@ -5,6 +5,7 @@ Validators for the MeiliSearch index metaclass.
 from typing import Union
 
 from django.db.models import Model
+from rest_framework.serializers import ModelSerializer
 
 from django_meilisearch.exceptions import (
     InvalidFilterableFieldError,
@@ -119,3 +120,20 @@ def validate_sortable_fields(
             raise InvalidSortableFieldError(
                 f"{model.__name__} does not have a filterable_field named {field}"
             )
+
+
+def validate_drf_serializer(name, namespace):
+    """
+    Validate the DRF serializer class for the index.
+
+    Args:
+        name (str): Index name.
+        namespace (dict): Namespace containing the index configuration.
+
+    Raises:
+        TypeError: If the serializer_class is not a subclass of ModelSerializer.
+    """
+    if not issubclass(namespace["serializer_class"], ModelSerializer):
+        raise TypeError(
+            f"{name}.serializer_class must be a subclass of ModelSerializer"
+        )

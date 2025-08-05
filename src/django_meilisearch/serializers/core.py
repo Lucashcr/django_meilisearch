@@ -1,15 +1,22 @@
+"""
+Module for DjangoCoreSerializer, which serializes Django model instances
+to a JSON format suitable for indexing.
+"""
+
 from datetime import datetime
 import json
-from typing import Any
 
 from django.core.serializers import serialize
 
 
+# pylint: disable=too-few-public-methods
 class DjangoCoreSerializer:
     """
     Base serializer for Django models to handle serialization to JSON.
-    This serializer is used to convert Django model instances into a format suitable for indexing.
-    It serializes the queryset and ensures that the primary key field is included in the serialized data.
+    This serializer is used to convert Django model instances
+    into a format suitable for indexing.
+    It serializes the queryset and ensures that the primary key field
+    is included in the serialized data.
     """
 
     def __init__(self, primary_key_field, use_timestamp, datetime_fields):

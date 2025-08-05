@@ -11,10 +11,8 @@ from camel_converter import dict_to_camel
 from django.db.models import Model
 from meilisearch.errors import MeilisearchApiError
 from meilisearch.models.task import Task
-from rest_framework.serializers import Serializer
 
 from django_meilisearch import client
-from django_meilisearch.serializers.core import DjangoCoreSerializer
 from django_meilisearch.serializers.facade import SerializerFacade
 from django_meilisearch.types import OptParams
 from django_meilisearch.metaclass import BaseIndexMetaclass

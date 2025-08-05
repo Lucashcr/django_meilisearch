@@ -5,7 +5,10 @@ This module contains the indexes definition for the api app.
 from django_meilisearch.indexes import BaseIndex
 
 from example.models import Post
-from example.serializers import PostSerializerWithTimestamp, PostSerializerWithoutTimestamp
+from example.serializers import (
+    PostSerializerWithTimestamp,
+    PostSerializerWithoutTimestamp,
+)
 
 
 class PostIndex(BaseIndex):
