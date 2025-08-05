@@ -5,6 +5,7 @@ This module contains the indexes definition for the api app.
 from django_meilisearch.indexes import BaseIndex
 
 from example.models import Post
+from example.serializers import PostSerializerWithTimestamp, PostSerializerWithoutTimestamp
 
 
 class PostIndex(BaseIndex):
@@ -27,7 +28,7 @@ class PostIndexWithUseTimestamp(BaseIndex):
 
     name = "posts_with_timestamp"
     model = Post
-    use_timestamp = True
+    serializer_class = PostSerializerWithTimestamp
 
 
 class PostIndexWithoutUseTimestamp(BaseIndex):
@@ -37,7 +38,7 @@ class PostIndexWithoutUseTimestamp(BaseIndex):
 
     name = "posts_without_timestamp"
     model = Post
-    use_timestamp = False
+    serializer_class = PostSerializerWithoutTimestamp
 
 
 class PostIndexWith10IndexingBatchSize(BaseIndex):

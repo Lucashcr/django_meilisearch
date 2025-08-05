@@ -128,6 +128,7 @@ class Command(BaseCommand):
             if task.status != "succeeded":
                 self.error(f'Failed to populate index: "{index_name}"')
                 self.error(f"Error: {task.details}")
+                self.error(f"Error: {task}")
 
     def adestroy(self, index_name: str, index_cls: type) -> None:
         """

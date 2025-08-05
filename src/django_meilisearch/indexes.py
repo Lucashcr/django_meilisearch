@@ -14,6 +14,8 @@ from meilisearch.models.task import Task
 from rest_framework.serializers import Serializer
 
 from django_meilisearch import client
+from django_meilisearch.serializers.core import DjangoCoreSerializer
+from django_meilisearch.serializers.facade import SerializerFacade
 from django_meilisearch.types import OptParams
 from django_meilisearch.metaclass import BaseIndexMetaclass
 
@@ -45,7 +47,7 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
     use_timestamp: bool = False
     indexing_batch_size: int = 100_000
 
-    serializer: Type[Serializer]
+    serializer: Type[SerializerFacade]
 
     @classmethod
     def __await_task_completion(cls, task_uid: int) -> Task:
@@ -109,7 +111,7 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
         for i in range(0, db_count, cls.indexing_batch_size):
             batch = cls.model.objects.all()[i : i + cls.indexing_batch_size]
             task_info = index.add_documents(
-                cls.serializer(batch, many=True).data,
+                cls.serializer.serialize(batch),
                 cls.primary_key_field,
             )
             task = client.get_task(task_info.task_uid)
@@ -142,7 +144,7 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
                     i : i + cls.indexing_batch_size
                 ]
                 task_info = index.add_documents(
-                    cls.serializer(batch, many=True).data,
+                    cls.serializer.serialize(batch),
                     cls.primary_key_field,
                 )
                 task = cls.__await_task_completion(task_info.task_uid)
@@ -261,7 +263,7 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
 
         index = client.index(cls.name)
         task_info = index.add_documents(
-            [cls.serializer(instance).data],
+            cls.serializer.serialize([instance]),
             cls.primary_key_field,
         )
         return client.get_task(task_info.task_uid)

@@ -7,7 +7,7 @@ The Document class is used to define the structure of the index that will be cre
 from typing import Type
 from weakref import WeakValueDictionary
 
-from django.db.models import Model, signals, DateTimeField
+from django.db.models import Model, signals
 from rest_framework.serializers import ModelSerializer
 
 from django_meilisearch.exceptions import (
@@ -15,6 +15,8 @@ from django_meilisearch.exceptions import (
     InvalidIndexNameError,
     MissingRequiredFieldError,
 )
+from django_meilisearch.serializers.core import DjangoCoreSerializer
+from django_meilisearch.serializers.facade import SerializerFacade
 from django_meilisearch.utils import exists_field_in_namespace
 from django_meilisearch.validators import (
     validate_filterable_fields,
@@ -22,7 +24,7 @@ from django_meilisearch.validators import (
     validate_searchable_fields,
     validate_sortable_fields,
 )
-from django_meilisearch.serializers import TimestampField
+from django_meilisearch.serializers.drf import TimestampField
 
 
 class BaseIndexMetaclass(type):
@@ -115,24 +117,20 @@ class BaseIndexMetaclass(type):
             cls.filterable_fields = filterable_fields
             cls.sortable_fields = sortable_fields
 
-            Meta = type(
-                "Meta",
-                (),
-                {"model": model, "fields": model_field_names},
-            )
-
-            datetime_fields = {}
-            if bool(namespace.get("use_timestamp")):
-                for field_name in model_field_names:
-                    field_class = getattr(model, field_name)
-                    if isinstance(field_class.field, DateTimeField):
-                        datetime_fields[field_name] = TimestampField()
-
-            cls.serializer = type(
-                f"{name}Serializer",
-                (ModelSerializer,),
-                {"Meta": Meta, **datetime_fields},
-            )
+            if namespace.get("serializer_class") is not None:
+                if not issubclass(
+                    namespace["serializer_class"], ModelSerializer
+                ):
+                    raise TypeError(
+                        f"{name}.serializer_class must be a subclass of ModelSerializer"
+                    )
+                cls.serializer = SerializerFacade(
+                    serializer_class=namespace["serializer_class"],
+                )
+            else:
+                cls.serializer = SerializerFacade(
+                    primary_key_field=primary_key_field,
+                )
 
             index_label = f"{namespace['model']._meta.app_label}.{namespace['__qualname__']}"
             mcs.REGISTERED_INDEXES[index_label] = cls
