@@ -22,7 +22,6 @@ class DjangoCoreSerializer:
         Serialize the queryset to JSON format.
         :param queryset: The queryset to serialize.
         """
-        print(serialize("python", queryset))
         result = json.loads(serialize("json", queryset))
 
         serialized_data = []

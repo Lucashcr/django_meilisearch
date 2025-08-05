@@ -38,7 +38,6 @@ class TestUseTimestampFlag(TestCase):
             filter="id=1",
             limit=1,
         )
-        print(result)
         PostIndexWithoutUseTimestamp.clean()
         PostIndexWithoutUseTimestamp.destroy()
 
@@ -58,7 +57,6 @@ class TestUseTimestampFlag(TestCase):
             filter="id=1",
             limit=1,
         )
-        print(result)
         PostIndexWithUseTimestamp.clean()
         PostIndexWithUseTimestamp.destroy()
 
