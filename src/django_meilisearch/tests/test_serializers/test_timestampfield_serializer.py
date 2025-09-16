@@ -2,7 +2,7 @@ from datetime import datetime
 
 from django.test import TestCase
 
-from django_meilisearch.serializers import TimestampField
+from django_meilisearch.serializers.drf import TimestampField
 from django.utils.timezone import get_current_timezone
 
 

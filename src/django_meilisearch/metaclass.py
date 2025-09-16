@@ -7,22 +7,25 @@ The Document class is used to define the structure of the index that will be cre
 from typing import Type
 from weakref import WeakValueDictionary
 
-from django.db.models import Model, signals, DateTimeField
-from rest_framework.serializers import ModelSerializer
+from django.db.models import Model, signals
 
 from django_meilisearch.exceptions import (
     InvalidDjangoModelError,
     InvalidIndexNameError,
     MissingRequiredFieldError,
 )
-from django_meilisearch.utils import exists_field_in_namespace
+from django_meilisearch.serializers.facade import SerializerFacade
+from django_meilisearch.utils import (
+    exists_field_in_namespace,
+    get_datetime_fields,
+)
 from django_meilisearch.validators import (
+    validate_drf_serializer,
     validate_filterable_fields,
     validate_primary_key_field,
     validate_searchable_fields,
     validate_sortable_fields,
 )
-from django_meilisearch.serializers import TimestampField
 
 
 class BaseIndexMetaclass(type):
@@ -115,24 +118,23 @@ class BaseIndexMetaclass(type):
             cls.filterable_fields = filterable_fields
             cls.sortable_fields = sortable_fields
 
-            Meta = type(
-                "Meta",
-                (),
-                {"model": model, "fields": model_field_names},
-            )
-
-            datetime_fields = {}
-            if bool(namespace.get("use_timestamp")):
-                for field_name in model_field_names:
-                    field_class = getattr(model, field_name)
-                    if isinstance(field_class.field, DateTimeField):
-                        datetime_fields[field_name] = TimestampField()
-
-            cls.serializer = type(
-                f"{name}Serializer",
-                (ModelSerializer,),
-                {"Meta": Meta, **datetime_fields},
-            )
+            serializer_class = namespace.get("serializer_class")
+            if serializer_class is not None:
+                validate_drf_serializer(name, serializer_class)
+                cls.serializer = SerializerFacade(
+                    serializer_class=serializer_class,
+                )
+            else:
+                datetime_fields = (
+                    get_datetime_fields(model)
+                    if namespace.get("use_timestamp", False)
+                    else []
+                )
+                cls.serializer = SerializerFacade(
+                    primary_key_field=primary_key_field,
+                    use_timestamp=namespace.get("use_timestamp", False),
+                    datetime_fields=datetime_fields,
+                )
 
             index_label = f"{namespace['model']._meta.app_label}.{namespace['__qualname__']}"
             mcs.REGISTERED_INDEXES[index_label] = cls

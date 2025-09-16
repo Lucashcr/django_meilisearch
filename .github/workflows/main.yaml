@@ -1,19 +1,45 @@
 name: Django Meilisearch GitHub Actions
 on:
   push:
-    branches: [main, dev]
+    branches: [main, develop]
   pull_request:
     branches: [main]
 
 
 jobs:
+  Code-Checking:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup Poetry
+        uses: abatilo/actions-poetry@v2
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Run black
+        run: poetry run black --check src
+
+      - name: Run pylint
+        run: poetry run pylint src
+        env:
+          MEILISEARCH_URL: "http://localhost:7700"
+          MEILISEARCH_API_KEY: "meilimasterkey"
+
   Run-Tests:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        python-version: [ '3.9', '3.10', '3.11', '3.12' ]
-        meilisearch-version: ['v1.9', 'v1.10', 'v1.11', 'v1.12']
+        python-version: [ '3.11', '3.12', '3.13' ]
+        meilisearch-version: ['v1.9', 'v1.10', 'v1.11', 'v1.12', 'v1.13', 'v1.14', 'v1.15']
 
     services:
       meilisearch:
@@ -22,7 +48,7 @@ jobs:
           - "7700:7700"
         env:
           MEILI_MASTER_KEY: "meilimasterkey"
-          MEILI_NO_ANALYTICS: true    
+          MEILI_NO_ANALYTICS: true
 
     steps:
       - uses: actions/checkout@v2
