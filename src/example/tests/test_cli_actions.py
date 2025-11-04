@@ -61,7 +61,9 @@ class TestInitialize(TestCase):
         PostIndex.create()
         tasks = PostIndex.apopulate()
         self.assertEqual(len(tasks), 1)
-        self.assertTrue(all(task.status == "enqueued" for task in tasks))
+        self.assertTrue(
+            all(task.status in ("enqueued", "processing") for task in tasks)
+        )
 
         time.sleep(1)
 

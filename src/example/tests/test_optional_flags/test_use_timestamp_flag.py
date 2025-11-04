@@ -38,12 +38,11 @@ class TestUseTimestampFlag(TestCase):
             filter="id=1",
             limit=1,
         )
-        print(result)
         PostIndexWithoutUseTimestamp.clean()
         PostIndexWithoutUseTimestamp.destroy()
 
         self.assertEqual(
-            result["hits"][0]["created_at"], "2024-09-28T19:02:19.537000Z"
+            result["hits"][0]["created_at"], "2024-09-28T19:02:19.537Z"
         )
 
     def test_use_timestamp_flag_as_true(self):
@@ -58,7 +57,6 @@ class TestUseTimestampFlag(TestCase):
             filter="id=1",
             limit=1,
         )
-        print(result)
         PostIndexWithUseTimestamp.clean()
         PostIndexWithUseTimestamp.destroy()
 

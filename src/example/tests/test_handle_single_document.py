@@ -51,7 +51,6 @@ class TestHandleSingleDocumentTestCase(TestCase):
         self.assertEqual(task.details["indexedDocuments"], 1)
 
         task = PostIndex.remove_single_document(post)
-        print(task)
         self.assertEqual(task.status, "succeeded")
         self.assertEqual(task.type, "documentDeletion")
 
