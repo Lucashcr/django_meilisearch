@@ -1,18 +1,19 @@
-[tool.poetry]
+[project]
 name = "django-meilisearch"
-version = "0.1.0"
+version = "0.2.0"
 description = ""
-authors = ["Lucas Rocha <lucash.rocha@hotmail.com>"]
+requires-python = ">=3.10,<4"
+authors = [
+  {name="Lucas Rocha", email="lucash.rocha@hotmail.com>"}
+]
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = "^3.9"
-django = "^4"
-meilisearch = "^0.31.4"
-alive-progress = "^3.1.5"
-djangorestframework = "^3.15.2"
-camel-converter = "^4.0.1"
-poetry = "^2.0.0"
+dependencies = [
+  "django (>=4)",
+  "meilisearch (>=0.31.4)",
+  "alive-progress (>=3.1.5)",
+  "djangorestframework (>=3.15.2)",
+  "camel-converter (>=4.0)"
+]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0"
@@ -58,5 +59,5 @@ ignore = ["migrations", "tests"]
 check = "scripts.check:run"
 
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=2.0.0"]
+build-backend = "poetry.core.masonry.api"

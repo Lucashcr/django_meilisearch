@@ -1,4 +1,4 @@
-name: Django Meilisearch GitHub Actions
+name: Django Meilisearch CI
 on:
   push:
     branches: [main, dev]
@@ -12,8 +12,8 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [ '3.9', '3.10', '3.11', '3.12' ]
-        meilisearch-version: ['v1.9', 'v1.10', 'v1.11', 'v1.12']
+        python-version: [ '3.9', '3.10', '3.11', '3.12', '3.13', '3.14' ]
+        meilisearch-version: ['v1.9', 'v1.10', 'v1.11', 'v1.12', 'v1.13', 'v1.14', 'v1.15', 'v1.16', 'v1.17', 'v1.18', 'v1.19', 'v1.20', 'v1.21', 'v1.22', 'v1.23', 'v1.24']
 
     services:
       meilisearch:
@@ -22,7 +22,7 @@ jobs:
           - "7700:7700"
         env:
           MEILI_MASTER_KEY: "meilimasterkey"
-          MEILI_NO_ANALYTICS: true    
+          MEILI_NO_ANALYTICS: true
 
     steps:
       - uses: actions/checkout@v2
@@ -37,6 +37,12 @@ jobs:
 
       - name: Install dependencies
         run: poetry install
+
+      - name: Check code format
+        run: poetry run black --check src
+
+      - name: Install dependencies
+        run: poetry run pylint src
 
       - name: Run tests
         env:
