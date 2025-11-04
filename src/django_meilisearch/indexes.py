@@ -176,7 +176,7 @@ class BaseIndex(metaclass=BaseIndexMetaclass):
 
     @classmethod
     def search(
-        cls, term: str, **opt_params: Unpack[OptParams]
+        cls, term: str, /, **opt_params: Unpack[OptParams]
     ) -> dict[str, Any]:
         # pylint: disable=line-too-long
         """Do a search on the index.
