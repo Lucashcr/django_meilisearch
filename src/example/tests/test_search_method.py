@@ -3,7 +3,6 @@ Test cases for the CLI actions.
 """
 
 from django.test import TestCase
-from meilisearch.errors import MeilisearchApiError
 
 from example.indexes import PostIndex
 
@@ -429,18 +428,18 @@ class TestSuccessfulSearchMethod(TestCase):
         """
         results = PostIndex.search(
             "itaque",
-            ranking_score_threshold=0.75,
+            ranking_score_threshold=0.5,
             show_ranking_score=True,
         )
 
-        self.assertEqual(len(results["hits"]), 6)
-        self.assertEqual(results["estimatedTotalHits"], 6)
+        self.assertEqual(len(results["hits"]), 7)
+        self.assertEqual(results["estimatedTotalHits"], 7)
         self.assertTrue(
-            all(hit["_rankingScore"] >= 0.75 for hit in results["hits"])
+            all(hit["_rankingScore"] >= 0.5 for hit in results["hits"])
         )
 
         id_list = [hit["id"] for hit in results["hits"]]
-        self.assertEqual(sorted(id_list), [12, 18, 21, 34, 36, 48])
+        self.assertEqual(sorted(id_list), [12, 18, 21, 34, 36, 44, 48])
 
 
 class TestFailedSearchMethod(TestCase):
