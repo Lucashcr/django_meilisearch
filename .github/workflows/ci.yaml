@@ -2,6 +2,7 @@ name: Django Meilisearch CI
 on:
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 
 jobs:
