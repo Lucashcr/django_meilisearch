@@ -6,7 +6,7 @@ A Meilisearch integration for Django project
 
 [![PyPI version](https://badge.fury.io/py/django-meilisearch.svg)](https://badge.fury.io/py/django-meilisearch)
 
-![workflow](https://github.com/Lucashcr/django_meilisearch/actions/workflows/main.yaml/badge.svg)
+![workflow](https://github.com/Lucashcr/django_meilisearch/actions/workflows/ci.yaml/badge.svg)
 
 ## How to run
 
